@@ -146,7 +146,12 @@ def find_reply_for_request(
 def handle_client_request(client_socket, address, config: dict, log_func=append_log) -> None:
     try:
         while True:
-            request_bytes = client_socket.recv(config["REQUEST_BUFFER_SIZE"])
+            try:
+                request_bytes = client_socket.recv(config["REQUEST_BUFFER_SIZE"])
+            except TimeoutError:
+                continue
+            except socket.timeout:
+                continue
             if not request_bytes:
                 break
 
@@ -177,7 +182,6 @@ def accept_clients(server_socket, config: dict, stop_event: threading.Event) -> 
             client_socket, address = server_socket.accept()
         except socket.timeout:
             continue
-        client_socket.settimeout(SOCKET_TIMEOUT_SECONDS)
         client_thread = threading.Thread(
             target=handle_client_request,
             args=(client_socket, address, config),
