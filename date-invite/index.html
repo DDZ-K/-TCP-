@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#ff6b9d" />
+  <title>💕 一场专属约会邀请</title>
+  <style>
+    :root {
+      --pink: #ff6b9d;
+      --pink-deep: #e84a7f;
+      --peach: #ffd1dc;
+      --cream: #fff7f9;
+      --ink: #3b2a32;
+      --muted: #8a6b75;
+      --card: rgba(255, 255, 255, 0.92);
+      --shadow: 0 12px 40px rgba(232, 74, 127, 0.18);
+      --radius: 22px;
+      --ok: #2ecc71;
+      --warn: #f39c12;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0; min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #ffd6e7 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #ffe8c8 0%, transparent 50%),
+        linear-gradient(180deg, #fff5f8 0%, #fff 40%, #fff8fb 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,107,157,.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 60%, rgba(255,182,193,.1) 0 2px, transparent 3px);
+      background-size: 48px 48px;
+      opacity: .7;
+    }
+
+    .app {
+      position: relative; z-index: 1;
+      max-width: 440px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      padding: 18px 16px calc(28px + env(safe-area-inset-bottom));
+    }
+
+    .progress {
+      display: flex; gap: 6px; margin-bottom: 16px;
+    }
+    .progress i {
+      flex: 1; height: 5px; border-radius: 99px;
+      background: #f0d7e0;
+      transition: .35s ease;
+    }
+    .progress i.on { background: linear-gradient(90deg, var(--pink), #ff9f68); }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 18px 20px;
+      border: 1px solid rgba(255,255,255,.8);
+      backdrop-filter: blur(10px);
+      animation: pop .45s cubic-bezier(.2,1.2,.4,1);
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(16px) scale(.98); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--pink-deep);
+      background: #ffe6ef; border-radius: 999px;
+      padding: 5px 10px; font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 1.55rem; line-height: 1.25; margin: 0 0 10px;
+      letter-spacing: .02em;
+    }
+    .subtitle {
+      color: var(--muted); font-size: .95rem; line-height: 1.55; margin: 0 0 18px;
+    }
+
+    .hero {
+      text-align: center;
+      font-size: 3.2rem;
+      margin: 8px 0 14px;
+      filter: drop-shadow(0 8px 16px rgba(255,107,157,.25));
+      animation: float 2.8s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .btns { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .btn-row {
+      position: relative;
+      min-height: 56px;
+      display: flex; gap: 12px; justify-content: center; align-items: center;
+    }
+
+    button, .chip {
+      font: inherit; border: 0; cursor: pointer;
+      border-radius: 16px;
+      transition: transform .15s ease, box-shadow .15s ease, background .2s;
+    }
+    button:active { transform: scale(.97); }
+
+    .btn {
+      width: 100%;
+      padding: 15px 18px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), #ff8f6b);
+      box-shadow: 0 10px 24px rgba(255,107,157,.35);
+    }
+    .btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+    .btn.secondary {
+      background: #fff;
+      color: var(--pink-deep);
+      border: 1.5px solid #ffc2d4;
+      box-shadow: none;
+    }
+    .btn.ghost {
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      font-weight: 600;
+      font-size: .92rem;
+      padding: 10px;
+    }
+
+    #noBtn {
+      position: absolute;
+      left: 12%;
+      top: 0;
+      width: 42%;
+      z-index: 2;
+      transition: left .28s cubic-bezier(.2,.8,.2,1), top .28s cubic-bezier(.2,.8,.2,1), transform .2s;
+      background: #fff;
+      color: #999;
+      border: 1.5px solid #eee;
+      box-shadow: 0 4px 14px rgba(0,0,0,.06);
+      font-weight: 600;
+      padding: 14px 10px;
+      font-size: .95rem;
+      border-radius: 16px;
+      user-select: none;
+      touch-action: none;
+    }
+    #yesBtn {
+      position: relative;
+      z-index: 1;
+      width: 48%;
+      margin-left: auto;
+      margin-right: 4%;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .option {
+      text-align: left;
+      padding: 14px 12px;
+      background: #fff;
+      border: 1.5px solid #f3d6e0;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(255,107,157,.06);
+    }
+    .option .emoji { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+    .option .title { font-weight: 700; font-size: .95rem; }
+    .option .desc { color: var(--muted); font-size: .75rem; margin-top: 4px; line-height: 1.35; }
+    .option.selected {
+      border-color: var(--pink);
+      background: linear-gradient(180deg, #fff 0%, #ffeef4 100%);
+      box-shadow: 0 8px 20px rgba(255,107,157,.18);
+    }
+
+    label.field {
+      display: block; margin-bottom: 12px;
+      font-size: .85rem; font-weight: 600; color: var(--muted);
+    }
+    input[type="date"], input[type="time"], input[type="text"], textarea, select {
+      width: 100%; margin-top: 6px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1.5px solid #f0d5de;
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255,107,157,.15);
+    }
+    textarea { min-height: 88px; resize: vertical; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 14px; }
+    .chip {
+      padding: 8px 12px;
+      background: #fff;
+      border: 1.5px solid #f0d5de;
+      color: var(--ink);
+      font-size: .85rem;
+      font-weight: 600;
+    }
+    .chip.on {
+      background: #ffe6ef;
+      border-color: var(--pink);
+      color: var(--pink-deep);
+    }
+
+    .timeline {
+      position: relative;
+      margin: 8px 0 16px;
+      padding-left: 18px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute; left: 5px; top: 6px; bottom: 6px;
+      width: 3px; border-radius: 99px;
+      background: linear-gradient(180deg, var(--pink), #ffc48a);
+    }
+    .t-item {
+      position: relative;
+      background: #fff;
+      border: 1px solid #f5dde6;
+      border-radius: 14px;
+      padding: 12px 12px 12px 14px;
+      margin-bottom: 10px;
+    }
+    .t-item::before {
+      content: "";
+      position: absolute; left: -16px; top: 16px;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: #fff; border: 3px solid var(--pink);
+    }
+    .t-item .time {
+      font-size: .75rem; color: var(--pink-deep); font-weight: 700;
+    }
+    .t-item .what { font-weight: 700; margin-top: 2px; }
+    .t-item .tip { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+
+    .checklist label {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #fff; border: 1px solid #f3d6e0;
+      border-radius: 14px; padding: 12px;
+      margin-bottom: 8px; font-size: .92rem;
+    }
+    .checklist input { margin-top: 3px; accent-color: var(--pink); width: 18px; height: 18px; }
+
+    .ticket {
+      background: linear-gradient(145deg, #fff 0%, #fff4f8 100%);
+      border: 2px dashed #ffb3cb;
+      border-radius: 18px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .ticket .code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .18em;
+      font-weight: 800;
+      color: var(--pink-deep);
+      font-size: 1.15rem;
+      margin: 10px 0;
+    }
+    .ticket .row {
+      display: flex; justify-content: space-between;
+      text-align: left; gap: 10px;
+      border-top: 1px dashed #ffd0e0;
+      padding-top: 10px; margin-top: 10px;
+      font-size: .88rem;
+    }
+    .ticket .k { color: var(--muted); font-size: .75rem; }
+    .ticket .v { font-weight: 700; margin-top: 2px; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+      background: rgba(59,42,50,.92); color: #fff;
+      padding: 10px 16px; border-radius: 999px;
+      font-size: .88rem; opacity: 0; pointer-events: none;
+      transition: .3s ease; z-index: 99; max-width: 86vw; text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .hearts { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+    .hearts span {
+      position: absolute; bottom: -20px; font-size: 18px;
+      animation: rise 2.2s linear forwards;
+      opacity: .9;
+    }
+    @keyframes rise {
+      to { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .hidden { display: none !important; }
+    .footer-note {
+      text-align: center; color: #c4a3ad; font-size: .75rem;
+      margin-top: 16px; line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  <div class="app">
+    <div class="progress" id="progress"></div>
+    <div id="stage"></div>
+    <p class="footer-note">手机浏览器打开 · 纯本地运行 · 数据保存在本机</p>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TOTAL = 8;
+    const state = {
+      step: 0,
+      theme: null,
+      date: "",
+      time: "",
+      place: "",
+      dress: [],
+      mood: "",
+      message: "",
+      checklist: {},
+      ticket: "",
+    };
+
+    const themes = [
+      { id: "dinner", emoji: "🍝", title: "晚餐约会", desc: "暖光、慢聊、好好吃一顿" },
+      { id: "cafe", emoji: "☕", title: "咖啡馆", desc: "甜品 + 闲聊 + 发呆合法" },
+      { id: "movie", emoji: "🎬", title: "看电影", desc: "并排坐着也算牵手预备" },
+      { id: "walk", emoji: "🌙", title: "夜风散步", desc: "慢慢走，把今天说完" },
+      { id: "park", emoji: "🧺", title: "公园野餐", desc: "阳光、垫子、一点点仪式感" },
+      { id: "surprise", emoji: "🎁", title: "惊喜盲盒", desc: "由发起人安排，你负责开心" },
+    ];
+
+    const places = {
+      dinner: ["那家一直想去的餐厅", "家附近的暖灯光小馆", "你点菜我付款专场"],
+      cafe: ["窗边双人座咖啡馆", "有猫的店", "手冲咖啡实验室"],
+      movie: ["最近院线热映", "经典回映厅", "家里投影仪小院线"],
+      walk: ["江边 / 湖边步道", "老街灯火", "小区外那条安静路"],
+      park: ["城市公园草坪", "天台小野餐", "阳台伪野餐（下雨备用）"],
+      surprise: ["保密，集合点另行通知", "你家楼下见", "我来接你出门"],
+    };
+
+    const dressOpts = ["轻松舒适", "稍微打扮一下", "情侣色系", "你最有感觉的那套", "运动鞋友好", "拍照好看"];
+    const moodOpts = ["甜甜的", "轻松搞笑", "安静陪伴", "冒险探索", "仪式感拉满"];
+
+    const itinerary = {
+      dinner: [
+        { t: "出发前 30 分钟", w: "确认行程与穿搭", tip: "充电宝 + 微笑" },
+        { t: "集合", w: "见面 · 小小拥抱可选", tip: "别迟到超过 5 分钟哦" },
+        { t: "正餐", w: "点菜 · 聊天 · 分享今日份故事", tip: "至少说一句今天谢谢你来" },
+        { t: "饭后", w: "散步消化 or 甜品续摊", tip: "拍一张合照存档" },
+        { t: "收尾", w: "安全送到 / 报平安", tip: "互道晚安" },
+      ],
+      cafe: [
+        { t: "集合", w: "咖啡馆汇合", tip: "先点对方可能喜欢的甜品" },
+        { t: "上半场", w: "闲聊 + 手机调勿扰", tip: "认真听对方说话" },
+        { t: "中场", w: "一起列「下次想做的事」清单", tip: "写在备忘录里" },
+        { t: "下半场", w: "逛附近小店 / 拍照", tip: "自然就好" },
+        { t: "告别", w: "约下一次时间", tip: "别只说「回头再说」" },
+      ],
+      movie: [
+        { t: "购票", w: "选片 · 选座（中间偏后黄金位）", tip: "忌剧透" },
+        { t: "开场前", w: "零食饮料补给", tip: "少选巨响包装" },
+        { t: "观影", w: "沉浸体验", tip: "紧张桥段可以轻轻碰一下手背" },
+        { t: "散场", w: "讨论最喜欢的镜头", tip: "意见不同也很好玩" },
+        { t: "返程", w: "夜宵可选", tip: "记得路上注意安全" },
+      ],
+      walk: [
+        { t: "集合", w: "约在熟悉的路口", tip: "带一件薄外套" },
+        { t: "慢走", w: "边走边聊最近的开心事", tip: "不看手机连续 20 分钟" },
+        { t: "停一站", w: "找长椅看风景 / 买杯热饮", tip: "听一听对方的歌单" },
+        { t: "折返", w: "选一条不同的路回去", tip: "留一点神秘感" },
+        { t: "到家", w: "互道晚安", tip: "说一句今天最喜欢的瞬间" },
+      ],
+      park: [
+        { t: "准备", w: "垫子、湿巾、小食、垃圾袋", tip: "环保小能手" },
+        { t: "抵达", w: "选阴凉/视野好的位置", tip: "防晒/防蚊" },
+        { t: "主场", w: "吃吃聊聊 · 小游戏", tip: "真心话大冒险轻度版" },
+        { t: "收拾", w: "不留垃圾在原地", tip: "留下的只有回忆" },
+        { t: "返程", w: "顺路买一份想分享的小吃", tip: "为下次埋伏笔" },
+      ],
+      surprise: [
+        { t: "T-60min", w: "保持电话畅通", tip: "相信发起人" },
+        { t: "集合", w: "按通知地点出现即可", tip: "闭眼环节可选" },
+        { t: "主线", w: "惊喜环节 × 1", tip: "允许尖叫和大笑" },
+        { t: "余韵", w: "轻松收尾活动", tip: "复盘今天的高光" },
+        { t: "告别", w: "郑重道谢", tip: "把喜欢说出口" },
+      ],
+    };
+
+    const $ = (s, el = document) => el.querySelector(s);
+    const stage = $("#stage");
+    const toastEl = $("#toast");
+
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(() => toastEl.classList.remove("show"), 1800);
+    }
+
+    function hearts(n = 14) {
+      const box = $("#hearts");
+      for (let i = 0; i < n; i++) {
+        const s = document.createElement("span");
+        s.textContent = ["💕", "💗", "✨", "🌸", "💖"][i % 5];
+        s.style.left = Math.random() * 100 + "%";
+        s.style.fontSize = 14 + Math.random() * 18 + "px";
+        s.style.animationDuration = 1.6 + Math.random() * 1.4 + "s";
+        box.appendChild(s);
+        setTimeout(() => s.remove(), 2600);
+      }
+    }
+
+    function renderProgress() {
+      const p = $("#progress");
+      p.innerHTML = "";
+      for (let i = 0; i < TOTAL; i++) {
+        const d = document.createElement("i");
+        if (i <= state.step) d.classList.add("on");
+        p.appendChild(d);
+      }
+    }
+
+    function save() {
+      try { localStorage.setItem("date_invite_v1", JSON.stringify(state)); } catch {}
+    }
+    function load() {
+      try {
+        const raw = localStorage.getItem("date_invite_v1");
+        if (raw) Object.assign(state, JSON.parse(raw));
+      } catch {}
+    }
+
+    function ticketCode() {
+      const t = Date.now().toString(36).toUpperCase().slice(-4);
+      const r = Math.random().toString(36).toUpperCase().slice(2, 6);
+      return `DATE-${t}-${r}`;
+    }
+
+    function go(step) {
+      state.step = step;
+      save();
+      renderProgress();
+      const fns = [viewInvite, viewTheme, viewWhen, viewWhere, viewStyle, viewMessage, viewPlan, viewTicket];
+      stage.innerHTML = "";
+      fns[step]();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ---------- Step 0: Invite ---------- */
+    function viewInvite() {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">💌 专属邀请函</div>
+        <div class="hero">💘</div>
+        <h1>要不要…和我去约会？</h1>
+        <p class="subtitle">这是一份认真的邀请。<br>右边那个「好呀」才是正确答案哦～</p>
+        <div class="btn-row" id="arena" style="height:140px;margin-top:8px;">
+          <button type="button" class="btn" id="yesBtn">好呀，接受 💕</button>
+          <button type="button" id="noBtn">不要</button>
+        </div>
+        <p class="subtitle" style="margin:14px 0 0;text-align:center;font-size:.8rem;">提示：点「不要」它会自己跑掉，逃不掉的是心动。</p>
+      `;
+      stage.appendChild(card);
+
+      const arena = $("#arena", card);
+      const noBtn = $("#noBtn", card);
+      const yesBtn = $("#yesBtn", card);
+      let dodge = 0;
+
+      function moveNo(e) {
+        if (e) e.preventDefault();
+        dodge++;
+        const aw = arena.clientWidth;
+        const ah = arena.clientHeight;
+        const bw = noBtn.offsetWidth;
+        const bh = noBtn.offsetHeight;
+        const pad = 4;
+        let x = Math.random() * Math.max(8, aw - bw - pad);
+        let y = Math.random() * Math.max(8, ah - bh - pad);
+        // keep away from yes button roughly on the right
+        if (x > aw * 0.45 && y < bh + 10) x = Math.random() * (aw * 0.4);
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+
+        const msgs = [
+          "点不到吧～",
+          "再想想嘛",
+          "它跑掉了！",
+          "接受会简单很多哦",
+          "你是不是在笑",
+          "还是点右边吧 💕",
+        ];
+        if (dodge % 2 === 0) toast(msgs[Math.min(msgs.length - 1, Math.floor(dodge / 2) % msgs.length)]);
+        if (dodge >= 8) {
+          noBtn.textContent = "其实也想…";
+        }
+        if (dodge >= 14) {
+          noBtn.textContent = "好吧我投降";
+          noBtn.style.background = "#ffe6ef";
+          noBtn.style.color = "var(--pink-deep)";
+          noBtn.style.borderColor = "var(--pink)";
+          noBtn.onclick = () => accept();
+        }
+      }
+
+      ["mouseenter", "touchstart", "click"].forEach(ev => {
+        noBtn.addEventListener(ev, moveNo, { passive: false });
+      });
+
+      function accept() {
+        hearts(18);
+        toast("太好了！约会正式启动 🎉");
+        setTimeout(() => go(1), 450);
+      }
+      yesBtn.addEventListener("click", accept);
+    }
+
+    /* ---------- Step 1: Theme ---------- */
+    function viewTheme() {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">第 1 站 · 约会主题</div>
+        <h1>今天我们怎么玩？</h1>
+        <p class="subtitle">选一个最心动的方向，后面的行程会跟着变。</p>
+        <div class="grid" id="themeGrid"></div>
+        <div class="btns" style="margin-top:16px">
+          <button class="btn" id="next" disabled>下一步</button>
+          <button class="btn ghost" id="back">返回</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      const grid = $("#themeGrid", card);
+      themes.forEach(t => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "option" + (state.theme === t.id ? " selected" : "");
+        b.innerHTML = `<span class="emoji">${t.emoji}</span><div class="title">${t.title}</div><div class="desc">${t.desc}</div>`;
+        b.onclick = () => {
+          state.theme = t.id;
+          state.place = "";
+          [...grid.children].forEach(c => c.classList.remove("selected"));
+          b.classList.add("selected");
+          $("#next", card).disabled = false;
+          save();
+        };
+        grid.appendChild(b);
+      });
+      if (state.theme) $("#next", card).disabled = false;
+      $("#next", card).onclick = () => go(2);
+      $("#back", card).onclick = () => go(0);
+    }
+
+    /* ---------- Step 2: When ---------- */
+    function viewWhen() {
+      const today = new Date();
+      const iso = d => d.toISOString().slice(0, 10);
+      if (!state.date) {
+        const n = new Date(today); n.setDate(n.getDate() + 1);
+        state.date = iso(n);
+      }
+      if (!state.time) state.time = "18:30";
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">第 2 站 · 时间</div>
+        <h1>定个好日子</h1>
+        <p class="subtitle">选日期和时间。改主意也没关系，反正你已经接受邀请了 😏</p>
+        <label class="field">日期
+          <input type="date" id="date" value="${state.date}" min="${iso(today)}" />
+        </label>
+        <label class="field">时间
+          <input type="time" id="time" value="${state.time}" />
+        </label>
+        <div class="chips" id="quick"></div>
+        <div class="btns">
+          <button class="btn" id="next">下一步</button>
+          <button class="btn ghost" id="back">上一步</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      const quick = [
+        { label: "今晚", off: 0, time: "19:00" },
+        { label: "明天", off: 1, time: "18:30" },
+        { label: "这周末", off: ((6 - today.getDay()) + 7) % 7 || 7, time: "15:00" },
+        { label: "下周五", off: ((5 - today.getDay()) + 7) % 7 || 7, time: "19:30" },
+      ];
+      quick.forEach(q => {
+        const c = document.createElement("button");
+        c.type = "button"; c.className = "chip"; c.textContent = q.label;
+        c.onclick = () => {
+          const d = new Date(today); d.setDate(d.getDate() + q.off);
+          state.date = iso(d); state.time = q.time;
+          $("#date", card).value = state.date;
+          $("#time", card).value = state.time;
+          toast(`已选：${q.label}`);
+        };
+        $("#quick", card).appendChild(c);
+      });
+      $("#next", card).onclick = () => {
+        state.date = $("#date", card).value;
+        state.time = $("#time", card).value;
+        if (!state.date || !state.time) return toast("先选好日期和时间哦");
+        save(); go(3);
+      };
+      $("#back", card).onclick = () => go(1);
+    }
+
+    /* ---------- Step 3: Where ---------- */
+    function viewWhere() {
+      const list = places[state.theme] || places.surprise;
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">第 3 站 · 地点</div>
+        <h1>去哪儿见面？</h1>
+        <p class="subtitle">先选一个方向，也可以自己填写具体店名/路口。</p>
+        <div class="chips" id="placeChips"></div>
+        <label class="field">具体地点（可改）
+          <input type="text" id="place" placeholder="例如：XX 路星巴克 / 地铁 A 口" value="${state.place || ""}" />
+        </label>
+        <div class="btns">
+          <button class="btn" id="next">下一步</button>
+          <button class="btn ghost" id="back">上一步</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      const chips = $("#placeChips", card);
+      list.forEach(p => {
+        const c = document.createElement("button");
+        c.type = "button";
+        c.className = "chip" + (state.place === p ? " on" : "");
+        c.textContent = p;
+        c.onclick = () => {
+          state.place = p;
+          $("#place", card).value = p;
+          [...chips.children].forEach(x => x.classList.remove("on"));
+          c.classList.add("on");
+        };
+        chips.appendChild(c);
+      });
+      $("#next", card).onclick = () => {
+        state.place = $("#place", card).value.trim();
+        if (!state.place) return toast("写个集合地点吧");
+        save(); go(4);
+      };
+      $("#back", card).onclick = () => go(2);
+    }
+
+    /* ---------- Step 4: Style ---------- */
+    function viewStyle() {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">第 4 站 · 氛围与穿搭</div>
+        <h1>约会画风</h1>
+        <p class="subtitle">穿搭提示可多选；氛围选一个最贴的。</p>
+        <div class="subtitle" style="margin-bottom:6px;font-weight:700;color:var(--ink)">穿搭关键词</div>
+        <div class="chips" id="dress"></div>
+        <div class="subtitle" style="margin:10px 0 6px;font-weight:700;color:var(--ink)">氛围</div>
+        <div class="chips" id="mood"></div>
+        <div class="btns">
+          <button class="btn" id="next">下一步</button>
+          <button class="btn ghost" id="back">上一步</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      dressOpts.forEach(d => {
+        const c = document.createElement("button");
+        c.type = "button";
+        c.className = "chip" + (state.dress.includes(d) ? " on" : "");
+        c.textContent = d;
+        c.onclick = () => {
+          if (state.dress.includes(d)) state.dress = state.dress.filter(x => x !== d);
+          else state.dress.push(d);
+          c.classList.toggle("on");
+        };
+        $("#dress", card).appendChild(c);
+      });
+      moodOpts.forEach(m => {
+        const c = document.createElement("button");
+        c.type = "button";
+        c.className = "chip" + (state.mood === m ? " on" : "");
+        c.textContent = m;
+        c.onclick = () => {
+          state.mood = m;
+          [...$("#mood", card).children].forEach(x => x.classList.remove("on"));
+          c.classList.add("on");
+        };
+        $("#mood", card).appendChild(c);
+      });
+      $("#next", card).onclick = () => {
+        if (!state.mood) return toast("选一个氛围吧");
+        if (!state.dress.length) state.dress = ["轻松舒适"];
+        save(); go(5);
+      };
+      $("#back", card).onclick = () => go(3);
+    }
+
+    /* ---------- Step 5: Message ---------- */
+    function viewMessage() {
+      const presets = [
+        "谢谢你愿意赴约，我会准时又靠谱。",
+        "不是随便约，是想认真陪你过几个小时。",
+        "你来就好，剩下的我来张罗。",
+        "今天目标：让你笑至少三次。",
+      ];
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">第 5 站 · 一句真心话</div>
+        <h1>写给对方的话</h1>
+        <p class="subtitle">会出现在最终约会票根上。短一点也动人。</p>
+        <div class="chips" id="presets"></div>
+        <label class="field">留言
+          <textarea id="msg" placeholder="写点什么…">${state.message || ""}</textarea>
+        </label>
+        <div class="btns">
+          <button class="btn" id="next">生成约会计划</button>
+          <button class="btn ghost" id="back">上一步</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      presets.forEach(p => {
+        const c = document.createElement("button");
+        c.type = "button"; c.className = "chip"; c.textContent = p.slice(0, 10) + "…";
+        c.title = p;
+        c.onclick = () => { $("#msg", card).value = p; toast("已填入"); };
+        $("#presets", card).appendChild(c);
+      });
+      $("#next", card).onclick = () => {
+        state.message = $("#msg", card).value.trim() || presets[0];
+        save(); go(6);
+      };
+      $("#back", card).onclick = () => go(4);
+    }
+
+    /* ---------- Step 6: Plan ---------- */
+    function viewPlan() {
+      const items = itinerary[state.theme] || itinerary.surprise;
+      const theme = themes.find(t => t.id === state.theme) || themes[0];
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">第 6 站 · 完整流程</div>
+        <h1>${theme.emoji} ${theme.title}行程</h1>
+        <p class="subtitle">${state.date} ${state.time} · ${state.place}<br>氛围：${state.mood || "—"} · 穿搭：${(state.dress || []).join(" / ") || "—"}</p>
+        <div class="timeline" id="tl"></div>
+        <div class="subtitle" style="font-weight:700;color:var(--ink);margin-bottom:8px">出发前清单</div>
+        <div class="checklist" id="ck"></div>
+        <div class="btns">
+          <button class="btn" id="next">生成约会票根</button>
+          <button class="btn secondary" id="share">复制行程摘要</button>
+          <button class="btn ghost" id="back">上一步</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      items.forEach(it => {
+        const d = document.createElement("div");
+        d.className = "t-item";
+        d.innerHTML = `<div class="time">${it.t}</div><div class="what">${it.w}</div><div class="tip">${it.tip}</div>`;
+        $("#tl", card).appendChild(d);
+      });
+      const checks = [
+        "手机电量 > 50% / 带充电宝",
+        "确认交通与到场时间",
+        "现金或支付方式准备好",
+        "把今天的开心事留给对方",
+        "如果迟到，提前发消息",
+      ];
+      checks.forEach((c, i) => {
+        const id = "ck" + i;
+        if (state.checklist[id] == null) state.checklist[id] = false;
+        const lab = document.createElement("label");
+        lab.innerHTML = `<input type="checkbox" id="${id}" ${state.checklist[id] ? "checked" : ""}/><span>${c}</span>`;
+        lab.querySelector("input").onchange = (e) => {
+          state.checklist[id] = e.target.checked;
+          save();
+        };
+        $("#ck", card).appendChild(lab);
+      });
+
+      $("#share", card).onclick = async () => {
+        const text = buildSummary();
+        try {
+          await navigator.clipboard.writeText(text);
+          toast("行程已复制，发给 TA 吧");
+        } catch {
+          prompt("复制以下内容：", text);
+        }
+      };
+      $("#next", card).onclick = () => {
+        if (!state.ticket) state.ticket = ticketCode();
+        save(); hearts(12); go(7);
+      };
+      $("#back", card).onclick = () => go(5);
+    }
+
+    function buildSummary() {
+      const theme = themes.find(t => t.id === state.theme) || themes[0];
+      const items = itinerary[state.theme] || itinerary.surprise;
+      return [
+        "【约会确认单】",
+        `主题：${theme.title}`,
+        `时间：${state.date} ${state.time}`,
+        `地点：${state.place}`,
+        `氛围：${state.mood}`,
+        `穿搭：${(state.dress || []).join("、")}`,
+        `留言：${state.message}`,
+        "",
+        "流程：",
+        ...items.map((x, i) => `${i + 1}. [${x.t}] ${x.w}`),
+        "",
+        state.ticket ? `票根编号：${state.ticket}` : "",
+      ].filter(Boolean).join("\n");
+    }
+
+    /* ---------- Step 7: Ticket ---------- */
+    function viewTicket() {
+      if (!state.ticket) state.ticket = ticketCode();
+      const theme = themes.find(t => t.id === state.theme) || themes[0];
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="badge">终章 · 约会票根</div>
+        <h1>我们说好了 💞</h1>
+        <p class="subtitle">截图保存这张票，就算盖章生效。</p>
+        <div class="ticket">
+          <div style="font-size:2rem">${theme.emoji}</div>
+          <div style="font-weight:800;font-size:1.15rem;margin-top:4px">DATE PASS</div>
+          <div class="code">${state.ticket}</div>
+          <div style="font-size:.9rem;color:var(--muted);line-height:1.5">「${state.message}」</div>
+          <div class="row">
+            <div><div class="k">主题</div><div class="v">${theme.title}</div></div>
+            <div style="text-align:right"><div class="k">氛围</div><div class="v">${state.mood}</div></div>
+          </div>
+          <div class="row">
+            <div><div class="k">时间</div><div class="v">${state.date}<br>${state.time}</div></div>
+            <div style="text-align:right"><div class="k">地点</div><div class="v">${state.place}</div></div>
+          </div>
+          <div class="row">
+            <div style="flex:1"><div class="k">穿搭提示</div><div class="v">${(state.dress || []).join(" · ")}</div></div>
+          </div>
+        </div>
+        <div class="btns" style="margin-top:16px">
+          <button class="btn" id="copy">复制完整邀请</button>
+          <button class="btn secondary" id="restart">再来一次（重置）</button>
+          <button class="btn ghost" id="back">返回行程</button>
+        </div>
+      `;
+      stage.appendChild(card);
+      hearts(10);
+      $("#copy", card).onclick = async () => {
+        const text = buildSummary();
+        try {
+          await navigator.clipboard.writeText(text);
+          toast("已复制，发给那个特别的人吧");
+        } catch {
+          prompt("复制：", text);
+        }
+      };
+      $("#restart", card).onclick = () => {
+        if (!confirm("确定清空本次约会设置？")) return;
+        localStorage.removeItem("date_invite_v1");
+        Object.assign(state, {
+          step: 0, theme: null, date: "", time: "", place: "",
+          dress: [], mood: "", message: "", checklist: {}, ticket: "",
+        });
+        go(0);
+      };
+      $("#back", card).onclick = () => go(6);
+    }
+
+    // boot
+    load();
+    // If user had accepted before and mid-flow, resume; if stuck on 0 keep invite
+    if (state.step > 0 && state.step < TOTAL) {
+      go(state.step);
+    } else if (state.step >= TOTAL - 1 && state.ticket) {
+      go(7);
+    } else {
+      state.step = 0;
+      go(0);
+    }
+  </script>
+</body>
+</html>
