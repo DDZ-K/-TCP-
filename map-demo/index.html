@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>地图 Demo · MapLibre（手机可开）</title>
+  <link href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: rgba(24, 26, 32, 0.92);
+      --text: #f4f1ec;
+      --muted: #a39b93;
+      --accent: #c73b6e;
+      --line: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    #map { position: absolute; inset: 0; }
+    .topbar {
+      position: absolute; z-index: 2; left: 12px; right: 12px; top: 12px;
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      pointer-events: none;
+    }
+    .pill, .btn {
+      pointer-events: auto;
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .btn { cursor: pointer; }
+    .btn.primary { background: var(--accent); border-color: transparent; font-weight: 600; }
+    .panel {
+      position: absolute; z-index: 2; left: 12px; right: 12px; bottom: 12px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      padding: 14px 16px; backdrop-filter: blur(12px);
+    }
+    .panel h1 { margin: 0 0 6px; font-size: 16px; }
+    .panel p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .maplibregl-ctrl-attrib { font-size: 10px; }
+    .marker-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent); border: 2px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,.35);
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="topbar">
+    <div class="pill">MapLibre 手机 Demo</div>
+    <div class="pill" id="status">加载中…</div>
+  </div>
+  <div class="panel">
+    <h1>拖动 / 双指缩放玩地图</h1>
+    <p>这是独立静态页（不依赖电脑本地 3000 端口）。底图用可公开访问的 OSM 瓦片；若灰屏，多半是手机网络拦了瓦片。</p>
+    <div class="actions">
+      <button class="btn primary" id="btn-bj" type="button">飞到北京</button>
+      <button class="btn" id="btn-sh" type="button">飞到上海</button>
+      <button class="btn" id="btn-me" type="button">定位我</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const style = {
+      version: 8,
+      sources: {
+        osm: {
+          type: 'raster',
+          tiles: [
+            'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+          ],
+          tileSize: 256,
+          attribution: '© OpenStreetMap'
+        }
+      },
+      layers: [{ id: 'osm', type: 'raster', source: 'osm' }]
+    };
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style,
+      center: [116.3974, 39.9093],
+      zoom: 11,
+      attributionControl: true
+    });
+
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+    map.addControl(new maplibregl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true },
+      trackUserLocation: true
+    }), 'top-right');
+
+    function addMarker(lng, lat, popupText) {
+      const el = document.createElement('div');
+      el.className = 'marker-dot';
+      new maplibregl.Marker({ element: el })
+        .setLngLat([lng, lat])
+        .setPopup(new maplibregl.Popup({ offset: 12 }).setText(popupText))
+        .addTo(map);
+    }
+
+    map.on('load', () => {
+      statusEl.textContent = '地图就绪';
+      addMarker(116.3974, 39.9093, '北京 · 天安门附近');
+      addMarker(121.4737, 31.2304, '上海 · 市中心');
+    });
+    map.on('error', (e) => {
+      statusEl.textContent = '加载异常';
+      console.error(e);
+    });
+
+    document.getElementById('btn-bj').onclick = () => map.flyTo({ center: [116.3974, 39.9093], zoom: 12 });
+    document.getElementById('btn-sh').onclick = () => map.flyTo({ center: [121.4737, 31.2304], zoom: 12 });
+    document.getElementById('btn-me').onclick = () => {
+      if (!navigator.geolocation) {
+        statusEl.textContent = '浏览器不支持定位';
+        return;
+      }
+      statusEl.textContent = '定位中…';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { longitude, latitude } = pos.coords;
+          map.flyTo({ center: [longitude, latitude], zoom: 14 });
+          addMarker(longitude, latitude, '你在这里');
+          statusEl.textContent = '定位成功';
+        },
+        () => { statusEl.textContent = '定位失败/被拒绝'; },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    };
+  </script>
+</body>
+</html>
