@@ -7,226 +7,322 @@
   <title>书库 · 设置风 Demo</title>
   <style>
     :root {
-      --bg: #0a0a0a;
-      --elev-1: #141414;
-      --elev-2: #1a1a1a;
-      --elev-3: #222222;
-      --border: #262626;
-      --border-strong: #3a3a3a;
-      --text: #fafafa;
-      --text-2: #a3a3a3;
-      --text-3: #737373;
+      --bg: #070707;
+      --elev-0: #0e0e0e;
+      --elev-1: #161616;
+      --elev-2: #1e1e1e;
+      --elev-3: #2a2a2a;
+      --border: #2c2c2c;
+      --border-strong: #484848;
+      --border-soft: #1f1f1f;
+      --text: #f5f5f5;
+      --text-2: #b3b3b3;
+      --text-3: #7a7a7a;
+      --text-4: #555555;
       --white: #ffffff;
       --black: #0a0a0a;
-      --danger: #ef4444;
-      --radius: 10px;
+      --radius: 12px;
       --radius-sm: 8px;
       --pad: 16px;
       --max: 440px;
       --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       --mono: ui-monospace, "SF Mono", Consolas, monospace;
+      --shadow-card: 0 1px 0 rgba(255,255,255,.04) inset, 0 8px 24px rgba(0,0,0,.45);
+      --shadow-float: 0 12px 40px rgba(0,0,0,.55);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
       margin: 0; min-height: 100%;
-      background: var(--bg); color: var(--text);
+      color: var(--text);
       font-family: var(--font);
       font-size: 15px; line-height: 1.5;
+      background:
+        radial-gradient(120% 80% at 50% -10%, #1a1a1a 0%, transparent 55%),
+        radial-gradient(80% 50% at 100% 100%, #121212 0%, transparent 45%),
+        var(--bg);
     }
-    body { padding: 0 0 96px; }
+    body { padding: 0 0 100px; }
 
     .app {
       max-width: var(--max);
       margin: 0 auto;
       min-height: 100vh;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      background: var(--bg);
+      background: linear-gradient(180deg, var(--elev-0) 0%, var(--bg) 28%, var(--bg) 100%);
+      border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-float);
     }
 
-    /* top bar */
     header.bar {
       position: sticky; top: 0; z-index: 20;
       display: flex; align-items: center; gap: 10px;
-      padding: 12px var(--pad);
-      background: rgba(10,10,10,.92);
+      padding: 14px var(--pad) 12px;
+      background: linear-gradient(180deg, #121212 0%, #0c0c0c 100%);
       border-bottom: 1px solid var(--border);
-      backdrop-filter: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,.35);
     }
     header.bar h1 {
       flex: 1; margin: 0;
-      font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+      font-size: 16px; font-weight: 650; letter-spacing: -0.02em;
     }
     .icon-btn {
       width: 36px; height: 36px;
       display: inline-flex; align-items: center; justify-content: center;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      background: var(--elev-1);
+      background: var(--elev-2);
       color: var(--text);
       cursor: pointer;
       font-size: 16px;
+      box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
     }
-    .icon-btn:active { background: var(--elev-2); }
+    .icon-btn:active { background: var(--elev-3); }
 
-    /* tabs */
     .tabs {
-      display: flex; gap: 0;
-      padding: 0 var(--pad);
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      display: flex; gap: 6px;
+      padding: 10px var(--pad) 0;
+      background: var(--elev-0);
+      border-bottom: 1px solid var(--border-soft);
     }
     .tab {
       flex: 1; text-align: center;
-      padding: 12px 8px;
-      font-size: 13px; font-weight: 500;
+      padding: 10px 8px 12px;
+      font-size: 13px; font-weight: 550;
       color: var(--text-3);
       border: none; background: none;
       border-bottom: 2px solid transparent;
+      border-radius: 8px 8px 0 0;
       cursor: pointer;
     }
     .tab[aria-selected="true"] {
-      color: var(--text);
+      color: var(--white);
+      background: linear-gradient(180deg, var(--elev-2), transparent);
       border-bottom-color: var(--white);
     }
 
     main { padding: var(--pad); }
 
-    .section-label {
-      margin: 20px 0 8px;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-3);
+    .hero {
+      margin: 0 0 14px;
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 42%),
+        linear-gradient(180deg, #1c1c1c, #121212);
+      box-shadow: var(--shadow-card);
     }
-    .section-label:first-child { margin-top: 4px; }
+    .hero .kicker {
+      font-size: 10px; font-weight: 650;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 6px;
+    }
+    .hero .line {
+      font-size: 15px; font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    .hero .sub {
+      margin-top: 4px;
+      font-size: 12px; color: var(--text-3);
+    }
 
-    /* settings groups */
+    .section-label {
+      display: flex; align-items: center; gap: 8px;
+      margin: 22px 0 10px;
+      font-size: 11px; font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+    .section-label::before {
+      content: "";
+      width: 3px; height: 12px;
+      border-radius: 2px;
+      background: var(--white);
+      opacity: .85;
+      flex-shrink: 0;
+    }
+    .section-label .count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-4);
+      letter-spacing: 0;
+      text-transform: none;
+      font-weight: 500;
+    }
+
     .group {
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--elev-1);
       overflow: hidden;
+      box-shadow: var(--shadow-card);
     }
     .row {
       display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      min-height: 52px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border-soft);
+      min-height: 54px;
+      background: linear-gradient(180deg, rgba(255,255,255,.02), transparent 40%);
     }
+    .row:nth-child(even) { background: rgba(255,255,255,.015); }
     .row:last-child { border-bottom: none; }
     .row .meta { flex: 1; min-width: 0; }
-    .row .title { font-size: 14px; font-weight: 500; }
-    .row .desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+    .row .title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .row .desc { font-size: 12px; color: var(--text-3); margin-top: 3px; }
     .row .value {
       font-size: 13px; color: var(--text-2);
       font-variant-numeric: tabular-nums;
+      font-weight: 500;
     }
-    .chev { color: var(--text-3); font-size: 14px; }
+    .chev { color: var(--text-4); font-size: 16px; font-weight: 300; }
 
-    /* toggle */
     .toggle {
-      width: 42px; height: 26px; border-radius: 999px;
+      width: 44px; height: 26px; border-radius: 999px;
       background: var(--elev-3); border: 1px solid var(--border-strong);
       position: relative; cursor: pointer; flex-shrink: 0;
-      transition: background .15s;
+      transition: background .15s, border-color .15s;
+      box-shadow: 0 1px 2px rgba(0,0,0,.4) inset;
     }
-    .toggle.on { background: var(--white); border-color: var(--white); }
+    .toggle.on {
+      background: var(--white);
+      border-color: var(--white);
+      box-shadow: none;
+    }
     .toggle::after {
       content: "";
       position: absolute; top: 2px; left: 2px;
       width: 20px; height: 20px; border-radius: 50%;
-      background: var(--text-2);
+      background: #9a9a9a;
+      box-shadow: 0 1px 3px rgba(0,0,0,.45);
       transition: transform .15s, background .15s;
     }
     .toggle.on::after {
-      transform: translateX(16px);
+      transform: translateX(18px);
       background: var(--black);
     }
 
-    /* select chips */
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; }
+    .chips {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 4px 14px 14px;
+      background: var(--elev-1);
+      border-top: 1px solid var(--border-soft);
+    }
     .chip {
       border: 1px solid var(--border);
-      background: transparent;
+      background: var(--elev-2);
       color: var(--text-2);
       border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 12px; font-weight: 500;
+      padding: 7px 12px;
+      font-size: 12px; font-weight: 550;
       cursor: pointer;
     }
     .chip[aria-pressed="true"] {
       background: var(--white);
       color: var(--black);
       border-color: var(--white);
+      font-weight: 700;
     }
 
-    /* book list */
     .book {
-      display: flex; gap: 12px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
+      display: flex; gap: 14px;
+      padding: 14px;
+      border-bottom: 1px solid var(--border-soft);
       cursor: pointer;
       text-align: left;
       width: 100%;
-      background: none; border-left: none; border-right: none; border-top: none;
+      background: transparent;
+      border-left: 3px solid transparent;
+      border-right: none; border-top: none;
       color: inherit; font: inherit;
+      transition: background .12s, border-color .12s;
     }
     .book:last-child { border-bottom: none; }
-    .book:active { background: var(--elev-2); }
-    .cover {
-      width: 48px; height: 68px; flex-shrink: 0;
-      border-radius: 4px;
-      border: 1px solid var(--border-strong);
-      background: linear-gradient(160deg, var(--elev-3), var(--elev-1));
-      display: flex; align-items: flex-end; justify-content: center;
-      padding: 6px;
-      font-size: 10px; font-weight: 700; color: var(--text-2);
-      letter-spacing: 0.02em;
-      text-align: center;
-      line-height: 1.2;
+    .book:active, .book.is-active {
+      background: var(--elev-2);
+      border-left-color: var(--white);
     }
-    .cover.c1 { background: linear-gradient(160deg, #2a2a2a, #111); }
-    .cover.c2 { background: linear-gradient(160deg, #333, #1a1a1a); }
-    .cover.c3 { background: linear-gradient(160deg, #252525, #0f0f0f); }
-    .cover.c4 { background: linear-gradient(160deg, #2e2e2e, #141414); }
-    .book .bmeta { flex: 1; min-width: 0; }
+    .cover {
+      width: 52px; height: 74px; flex-shrink: 0;
+      border-radius: 5px 7px 7px 5px;
+      border: 1px solid var(--border-strong);
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 8px 6px;
+      font-size: 10px; font-weight: 700; color: #d4d4d4;
+      letter-spacing: 0.04em;
+      text-align: center; line-height: 1.2;
+      position: relative;
+      box-shadow:
+        inset 3px 0 0 rgba(255,255,255,.08),
+        inset -1px 0 0 rgba(0,0,0,.5),
+        0 6px 14px rgba(0,0,0,.4);
+    }
+    .cover::after {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.06) 48%, transparent 56%);
+      pointer-events: none;
+    }
+    .cover.c1 { background: linear-gradient(165deg, #3a3a3a 0%, #1b1b1b 55%, #121212 100%); }
+    .cover.c2 { background: linear-gradient(165deg, #2f2f2f 0%, #171717 60%, #0f0f0f 100%); }
+    .cover.c3 { background: linear-gradient(165deg, #454545 0%, #222 50%, #151515 100%); }
+    .cover.c4 { background: linear-gradient(165deg, #333 0%, #1a1a1a 55%, #101010 100%); }
+
+    .book .bmeta { flex: 1; min-width: 0; padding-top: 2px; }
     .book .btitle {
-      font-size: 14px; font-weight: 600;
+      font-size: 15px; font-weight: 650;
+      letter-spacing: -0.01em;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .book .bauthor { font-size: 12px; color: var(--text-3); margin-top: 2px; }
-    .book .btags { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .book .bauthor { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+    .book .btags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
     .tag {
       font-size: 10px; color: var(--text-2);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2px 6px;
+      background: var(--elev-2);
+      border-radius: 5px;
+      padding: 3px 7px;
       font-family: var(--mono);
     }
+    .progress-wrap {
+      margin-top: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
     .progress {
-      margin-top: 8px;
-      height: 3px; background: var(--elev-3);
-      border-radius: 2px; overflow: hidden;
+      flex: 1;
+      height: 4px; background: var(--elev-3);
+      border-radius: 3px; overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.45);
     }
     .progress > i {
       display: block; height: 100%;
-      background: var(--white);
-      border-radius: 2px;
+      background: linear-gradient(90deg, #cfcfcf, #fff);
+      border-radius: 3px;
+      box-shadow: 0 0 8px rgba(255,255,255,.25);
+    }
+    .progress-wrap .pct {
+      font-size: 11px; color: var(--text-3);
+      font-family: var(--mono);
+      min-width: 32px; text-align: right;
     }
 
-    /* empty / detail panel */
     .panel {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      background: var(--elev-1);
-      padding: 16px;
-      margin-top: 12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent 30%),
+        var(--elev-2);
+      padding: 18px 16px;
+      margin-top: 16px;
+      box-shadow: var(--shadow-card);
     }
     .panel h2 {
       margin: 0 0 6px;
-      font-size: 16px; font-weight: 600;
+      font-size: 18px; font-weight: 700;
+      letter-spacing: -0.02em;
     }
     .panel p {
       margin: 0;
@@ -239,28 +335,29 @@
     .stat {
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 10px 8px;
+      padding: 12px 8px;
       text-align: center;
-      background: var(--elev-2);
+      background: var(--elev-1);
+      box-shadow: 0 1px 0 rgba(255,255,255,.03) inset;
     }
     .stat b {
       display: block;
-      font-size: 16px; font-weight: 600;
+      font-size: 17px; font-weight: 700;
       font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
     .stat span {
       font-size: 10px; color: var(--text-3);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
     }
 
-    /* primary / secondary buttons — Ollama: white CTA */
     .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .btn {
       display: flex; align-items: center; justify-content: center;
-      width: 100%; min-height: 44px;
+      width: 100%; min-height: 46px;
       border-radius: var(--radius-sm);
-      font-size: 14px; font-weight: 600;
+      font-size: 14px; font-weight: 700;
       cursor: pointer;
       border: 1px solid transparent;
     }
@@ -268,32 +365,38 @@
       background: var(--white);
       color: var(--black);
       border-color: var(--white);
+      box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 6px 16px rgba(0,0,0,.35);
     }
-    .btn-primary:active { opacity: .88; }
+    .btn-primary:active { transform: translateY(1px); opacity: .92; }
     .btn-secondary {
-      background: transparent;
+      background: var(--elev-2);
       color: var(--text);
       border-color: var(--border-strong);
+      box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
     }
-    .btn-secondary:active { background: var(--elev-2); }
+    .btn-secondary:active { background: var(--elev-3); }
     .btn-ghost {
       background: transparent;
-      color: var(--text-2);
+      color: var(--text-3);
       border-color: transparent;
-      font-weight: 500;
+      font-weight: 550;
     }
 
     .hint {
-      margin-top: 16px;
+      margin-top: 18px;
       font-size: 11px;
-      color: var(--text-3);
+      color: var(--text-4);
       font-family: var(--mono);
-      line-height: 1.45;
+      line-height: 1.5;
+      padding: 10px 12px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,.015);
     }
 
     .search {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       background: var(--elev-1);
@@ -301,22 +404,26 @@
       font: inherit;
       font-size: 14px;
       outline: none;
-      margin-bottom: 12px;
+      margin-bottom: 4px;
+      box-shadow: var(--shadow-card);
     }
-    .search::placeholder { color: var(--text-3); }
-    .search:focus { border-color: var(--border-strong); }
+    .search::placeholder { color: var(--text-4); }
+    .search:focus {
+      border-color: var(--border-strong);
+      background: var(--elev-2);
+    }
 
     .hidden { display: none !important; }
 
     footer.foot {
-      margin-top: 24px;
+      margin-top: 28px;
       padding-top: 16px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-soft);
       font-size: 11px;
-      color: var(--text-3);
+      color: var(--text-4);
       text-align: center;
     }
-  </style>
+</style>
 </head>
 <body>
   <div class="app">
@@ -334,6 +441,7 @@
     <main>
       <!-- LIBRARY -->
       <section id="view-library">
+        <div class="hero"><div class="kicker">Library</div><div class="line">你的书架</div><div class="sub">深色极简 · 用灰阶与边框分层，而不是粉彩或毛玻璃</div></div>
         <input class="search" id="q" type="search" placeholder="搜索书名或作者…" autocomplete="off" />
 
         <div class="section-label">在读</div>
@@ -486,13 +594,13 @@
     function bookCard(b) {
       const short = b.title.length > 4 ? b.title.slice(0, 2) : b.title;
       return `
-        <button type="button" class="book" data-id="${b.id}">
+        <button type="button" class="book${state.selected && state.selected.id === b.id ? " is-active" : ""}" data-id="${b.id}">
           <div class="cover ${b.cover}">${state.settings.coverText ? short : ""}</div>
           <div class="bmeta">
             <div class="btitle">${b.title}</div>
             <div class="bauthor">${b.author}</div>
             <div class="btags">${b.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
-            ${b.shelf === "reading" || b.shelf === "done" ? `<div class="progress" aria-hidden="true"><i style="width:${b.progress}%"></i></div>` : ""}
+            ${b.shelf === "reading" || b.shelf === "done" ? `<div class="progress-wrap"><div class="progress" aria-hidden="true"><i style="width:${b.progress}%"></i></div><span class="pct">${b.progress}%</span></div>` : ""}
           </div>
         </button>`;
     }
@@ -513,6 +621,10 @@
         wishlist: list.filter(b => b.shelf === "wishlist"),
         done: list.filter(b => b.shelf === "done"),
       };
+      const labels = document.querySelectorAll("#view-library .section-label");
+      if (labels[0]) labels[0].innerHTML = `在读<span class="count">${shelves.reading.length}</span>`;
+      if (labels[1]) labels[1].innerHTML = `想读<span class="count">${shelves.wishlist.length}</span>`;
+      if (labels[2]) labels[2].innerHTML = `读完<span class="count">${shelves.done.length}</span>`;
       $("#list-reading").innerHTML = shelves.reading.map(bookCard).join("") || emptyRow("暂无在读书籍");
       $("#list-wishlist").innerHTML = shelves.wishlist.map(bookCard).join("") || emptyRow("想读清单为空");
       $("#list-done").innerHTML = shelves.done.map(bookCard).join("") || emptyRow("还没有读完的书");
