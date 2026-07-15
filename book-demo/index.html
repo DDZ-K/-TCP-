@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>书库 · 设置风 Demo</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --elev-1: #141414;
+      --elev-2: #1a1a1a;
+      --elev-3: #222222;
+      --border: #262626;
+      --border-strong: #3a3a3a;
+      --text: #fafafa;
+      --text-2: #a3a3a3;
+      --text-3: #737373;
+      --white: #ffffff;
+      --black: #0a0a0a;
+      --danger: #ef4444;
+      --radius: 10px;
+      --radius-sm: 8px;
+      --pad: 16px;
+      --max: 440px;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --mono: ui-monospace, "SF Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; min-height: 100%;
+      background: var(--bg); color: var(--text);
+      font-family: var(--font);
+      font-size: 15px; line-height: 1.5;
+    }
+    body { padding: 0 0 96px; }
+
+    .app {
+      max-width: var(--max);
+      margin: 0 auto;
+      min-height: 100vh;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    /* top bar */
+    header.bar {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px var(--pad);
+      background: rgba(10,10,10,.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: none;
+    }
+    header.bar h1 {
+      flex: 1; margin: 0;
+      font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+    }
+    .icon-btn {
+      width: 36px; height: 36px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--elev-1);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .icon-btn:active { background: var(--elev-2); }
+
+    /* tabs */
+    .tabs {
+      display: flex; gap: 0;
+      padding: 0 var(--pad);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .tab {
+      flex: 1; text-align: center;
+      padding: 12px 8px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-3);
+      border: none; background: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+    .tab[aria-selected="true"] {
+      color: var(--text);
+      border-bottom-color: var(--white);
+    }
+
+    main { padding: var(--pad); }
+
+    .section-label {
+      margin: 20px 0 8px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .section-label:first-child { margin-top: 4px; }
+
+    /* settings groups */
+    .group {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--elev-1);
+      overflow: hidden;
+    }
+    .row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      min-height: 52px;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .meta { flex: 1; min-width: 0; }
+    .row .title { font-size: 14px; font-weight: 500; }
+    .row .desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+    .row .value {
+      font-size: 13px; color: var(--text-2);
+      font-variant-numeric: tabular-nums;
+    }
+    .chev { color: var(--text-3); font-size: 14px; }
+
+    /* toggle */
+    .toggle {
+      width: 42px; height: 26px; border-radius: 999px;
+      background: var(--elev-3); border: 1px solid var(--border-strong);
+      position: relative; cursor: pointer; flex-shrink: 0;
+      transition: background .15s;
+    }
+    .toggle.on { background: var(--white); border-color: var(--white); }
+    .toggle::after {
+      content: "";
+      position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--text-2);
+      transition: transform .15s, background .15s;
+    }
+    .toggle.on::after {
+      transform: translateX(16px);
+      background: var(--black);
+    }
+
+    /* select chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; }
+    .chip {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-2);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+    }
+    .chip[aria-pressed="true"] {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+
+    /* book list */
+    .book {
+      display: flex; gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      background: none; border-left: none; border-right: none; border-top: none;
+      color: inherit; font: inherit;
+    }
+    .book:last-child { border-bottom: none; }
+    .book:active { background: var(--elev-2); }
+    .cover {
+      width: 48px; height: 68px; flex-shrink: 0;
+      border-radius: 4px;
+      border: 1px solid var(--border-strong);
+      background: linear-gradient(160deg, var(--elev-3), var(--elev-1));
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 6px;
+      font-size: 10px; font-weight: 700; color: var(--text-2);
+      letter-spacing: 0.02em;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .cover.c1 { background: linear-gradient(160deg, #2a2a2a, #111); }
+    .cover.c2 { background: linear-gradient(160deg, #333, #1a1a1a); }
+    .cover.c3 { background: linear-gradient(160deg, #252525, #0f0f0f); }
+    .cover.c4 { background: linear-gradient(160deg, #2e2e2e, #141414); }
+    .book .bmeta { flex: 1; min-width: 0; }
+    .book .btitle {
+      font-size: 14px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .book .bauthor { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+    .book .btags { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: 10px; color: var(--text-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: var(--mono);
+    }
+    .progress {
+      margin-top: 8px;
+      height: 3px; background: var(--elev-3);
+      border-radius: 2px; overflow: hidden;
+    }
+    .progress > i {
+      display: block; height: 100%;
+      background: var(--white);
+      border-radius: 2px;
+    }
+
+    /* empty / detail panel */
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--elev-1);
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 16px; font-weight: 600;
+    }
+    .panel p {
+      margin: 0;
+      font-size: 13px; color: var(--text-2);
+    }
+    .panel .stat-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; margin: 16px 0;
+    }
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      text-align: center;
+      background: var(--elev-2);
+    }
+    .stat b {
+      display: block;
+      font-size: 16px; font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat span {
+      font-size: 10px; color: var(--text-3);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* primary / secondary buttons — Ollama: white CTA */
+    .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; min-height: 44px;
+      border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+    .btn-primary:active { opacity: .88; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:active { background: var(--elev-2); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border-color: transparent;
+      font-weight: 500;
+    }
+
+    .hint {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: var(--mono);
+      line-height: 1.45;
+    }
+
+    .search {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--elev-1);
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .search::placeholder { color: var(--text-3); }
+    .search:focus { border-color: var(--border-strong); }
+
+    .hidden { display: none !important; }
+
+    footer.foot {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="bar">
+      <button class="icon-btn" type="button" id="btn-back" title="返回" aria-label="返回">←</button>
+      <h1 id="page-title">书库</h1>
+      <button class="icon-btn" type="button" id="btn-more" title="更多" aria-label="更多">···</button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="library">书库</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="settings">设置</button>
+    </nav>
+
+    <main>
+      <!-- LIBRARY -->
+      <section id="view-library">
+        <input class="search" id="q" type="search" placeholder="搜索书名或作者…" autocomplete="off" />
+
+        <div class="section-label">在读</div>
+        <div class="group" id="list-reading"></div>
+
+        <div class="section-label">想读</div>
+        <div class="group" id="list-wishlist"></div>
+
+        <div class="section-label">读完</div>
+        <div class="group" id="list-done"></div>
+
+        <div id="detail" class="panel hidden"></div>
+
+        <p class="hint">Ollama-like · monochrome · no pink · no glass</p>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="view-settings" class="hidden">
+        <div class="section-label">阅读</div>
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="title">深色阅读</div>
+              <div class="desc">正文区使用深色背景</div>
+            </div>
+            <button type="button" class="toggle on" id="tog-dark" aria-pressed="true" aria-label="深色阅读"></button>
+          </div>
+          <div class="row">
+            <div class="meta">
+              <div class="title">字体大小</div>
+              <div class="desc">影响阅读页正文字号</div>
+            </div>
+            <span class="value" id="font-val">16</span>
+          </div>
+          <div class="chips" id="font-chips">
+            <button type="button" class="chip" data-size="14">小</button>
+            <button type="button" class="chip" data-size="16" aria-pressed="true">中</button>
+            <button type="button" class="chip" data-size="18">大</button>
+            <button type="button" class="chip" data-size="20">特大</button>
+          </div>
+          <div class="row">
+            <div class="meta">
+              <div class="title">行距</div>
+              <div class="desc">紧凑 / 舒适 / 宽松</div>
+            </div>
+            <span class="value" id="lead-val">舒适</span>
+          </div>
+          <div class="chips" id="lead-chips">
+            <button type="button" class="chip" data-lead="紧凑">紧凑</button>
+            <button type="button" class="chip" data-lead="舒适" aria-pressed="true">舒适</button>
+            <button type="button" class="chip" data-lead="宽松">宽松</button>
+          </div>
+        </div>
+
+        <div class="section-label">书库</div>
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="title">自动同步进度</div>
+              <div class="desc">跨设备记住读到哪一页</div>
+            </div>
+            <button type="button" class="toggle on" id="tog-sync" aria-pressed="true"></button>
+          </div>
+          <div class="row">
+            <div class="meta">
+              <div class="title">显示封面文字</div>
+              <div class="desc">无图时用标题占位</div>
+            </div>
+            <button type="button" class="toggle on" id="tog-cover" aria-pressed="true"></button>
+          </div>
+          <button type="button" class="row" id="row-sort" style="width:100%;border:none;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left;">
+            <div class="meta">
+              <div class="title">默认排序</div>
+              <div class="desc">最近阅读优先</div>
+            </div>
+            <span class="value" id="sort-val">最近</span>
+            <span class="chev">›</span>
+          </button>
+        </div>
+
+        <div class="section-label">关于</div>
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="title">主题</div>
+              <div class="desc">Ollama-like monochrome</div>
+            </div>
+            <span class="value">Dark</span>
+          </div>
+          <div class="row">
+            <div class="meta">
+              <div class="title">版本</div>
+            </div>
+            <span class="value" style="font-family:var(--mono)">demo-0.1</span>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:20px">
+          <button type="button" class="btn btn-primary" id="btn-save">保存设置</button>
+          <button type="button" class="btn btn-secondary" id="btn-export">导出书单 JSON</button>
+          <button type="button" class="btn btn-ghost" id="btn-reset">恢复默认</button>
+        </div>
+
+        <footer class="foot">无粉色 · 无毛玻璃 · 白底黑字主按钮</footer>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const BOOKS = [
+      { id: 1, title: "人类简史", author: "尤瓦尔·赫拉利", shelf: "reading", progress: 62, tags: ["非虚构", "历史"], cover: "c1", pages: 440, year: 2014 },
+      { id: 2, title: "原则", author: "瑞·达利欧", shelf: "reading", progress: 28, tags: ["商业", "思维"], cover: "c2", pages: 592, year: 2018 },
+      { id: 3, title: "三体", author: "刘慈欣", shelf: "wishlist", progress: 0, tags: ["科幻"], cover: "c3", pages: 302, year: 2008 },
+      { id: 4, title: "设计中的设计", author: "原研哉", shelf: "wishlist", progress: 0, tags: ["设计"], cover: "c4", pages: 287, year: 2006 },
+      { id: 5, title: "小王子", author: "圣埃克苏佩里", shelf: "done", progress: 100, tags: ["文学"], cover: "c1", pages: 96, year: 1943 },
+      { id: 6, title: "代码整洁之道", author: "Robert C. Martin", shelf: "done", progress: 100, tags: ["工程"], cover: "c2", pages: 431, year: 2008 },
+    ];
+
+    const state = {
+      tab: "library",
+      q: "",
+      selected: null,
+      settings: {
+        dark: true,
+        font: 16,
+        lead: "舒适",
+        sync: true,
+        coverText: true,
+        sort: "最近",
+      },
+    };
+
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+    function toast(msg) {
+      let t = $("#toast");
+      if (!t) {
+        t = document.createElement("div");
+        t.id = "toast";
+        t.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#fff;color:#0a0a0a;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;";
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = "1";
+      clearTimeout(t._tid);
+      t._tid = setTimeout(() => { t.style.opacity = "0"; }, 1600);
+    }
+
+    function bookCard(b) {
+      const short = b.title.length > 4 ? b.title.slice(0, 2) : b.title;
+      return `
+        <button type="button" class="book" data-id="${b.id}">
+          <div class="cover ${b.cover}">${state.settings.coverText ? short : ""}</div>
+          <div class="bmeta">
+            <div class="btitle">${b.title}</div>
+            <div class="bauthor">${b.author}</div>
+            <div class="btags">${b.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+            ${b.shelf === "reading" || b.shelf === "done" ? `<div class="progress" aria-hidden="true"><i style="width:${b.progress}%"></i></div>` : ""}
+          </div>
+        </button>`;
+    }
+
+    function filtered() {
+      const q = state.q.trim().toLowerCase();
+      let list = BOOKS.slice();
+      if (q) list = list.filter(b => (b.title + b.author + b.tags.join("")).toLowerCase().includes(q));
+      if (state.settings.sort === "书名") list.sort((a, b) => a.title.localeCompare(b.title, "zh"));
+      else if (state.settings.sort === "进度") list.sort((a, b) => b.progress - a.progress);
+      return list;
+    }
+
+    function renderLists() {
+      const list = filtered();
+      const shelves = {
+        reading: list.filter(b => b.shelf === "reading"),
+        wishlist: list.filter(b => b.shelf === "wishlist"),
+        done: list.filter(b => b.shelf === "done"),
+      };
+      $("#list-reading").innerHTML = shelves.reading.map(bookCard).join("") || emptyRow("暂无在读书籍");
+      $("#list-wishlist").innerHTML = shelves.wishlist.map(bookCard).join("") || emptyRow("想读清单为空");
+      $("#list-done").innerHTML = shelves.done.map(bookCard).join("") || emptyRow("还没有读完的书");
+
+      $$(".book").forEach(el => {
+        el.onclick = () => {
+          const id = +el.dataset.id;
+          state.selected = BOOKS.find(b => b.id === id);
+          renderDetail();
+        };
+      });
+    }
+
+    function emptyRow(text) {
+      return `<div class="row"><div class="meta"><div class="desc">${text}</div></div></div>`;
+    }
+
+    function renderDetail() {
+      const box = $("#detail");
+      const b = state.selected;
+      if (!b) {
+        box.classList.add("hidden");
+        box.innerHTML = "";
+        return;
+      }
+      box.classList.remove("hidden");
+      const shelfLabel = { reading: "在读", wishlist: "想读", done: "读完" }[b.shelf];
+      box.innerHTML = `
+        <h2>${b.title}</h2>
+        <p>${b.author} · ${b.year} · ${shelfLabel}</p>
+        <div class="stat-row">
+          <div class="stat"><b>${b.pages}</b><span>页</span></div>
+          <div class="stat"><b>${b.progress}%</b><span>进度</span></div>
+          <div class="stat"><b>${b.tags.length}</b><span>标签</span></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-open">继续阅读</button>
+          <button type="button" class="btn btn-secondary" id="btn-shelf">移到${b.shelf === "wishlist" ? "在读" : "想读"}</button>
+          <button type="button" class="btn btn-ghost" id="btn-close-detail">收起</button>
+        </div>
+      `;
+      $("#btn-open").onclick = () => toast(`打开「${b.title}」· 字号 ${state.settings.font}px`);
+      $("#btn-shelf").onclick = () => {
+        b.shelf = b.shelf === "wishlist" ? "reading" : "wishlist";
+        if (b.shelf === "reading" && b.progress === 0) b.progress = 1;
+        renderLists();
+        renderDetail();
+        toast("书架已更新");
+      };
+      $("#btn-close-detail").onclick = () => {
+        state.selected = null;
+        renderDetail();
+      };
+      box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function setTab(name) {
+      state.tab = name;
+      $$(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"));
+      $("#view-library").classList.toggle("hidden", name !== "library");
+      $("#view-settings").classList.toggle("hidden", name !== "settings");
+      $("#page-title").textContent = name === "library" ? "书库" : "设置";
+    }
+
+    function wireToggle(el, key) {
+      el.onclick = () => {
+        const on = !el.classList.contains("on");
+        el.classList.toggle("on", on);
+        el.setAttribute("aria-pressed", on ? "true" : "false");
+        state.settings[key] = on;
+        if (key === "coverText") renderLists();
+      };
+    }
+
+    function wireChips(root, attr, key, labelEl, mapLabel) {
+      $$(`#${root} .chip`).forEach(chip => {
+        chip.onclick = () => {
+          $$(`#${root} .chip`).forEach(c => c.setAttribute("aria-pressed", "false"));
+          chip.setAttribute("aria-pressed", "true");
+          const v = chip.getAttribute(attr);
+          state.settings[key] = mapLabel ? v : (isNaN(+v) ? v : +v);
+          if (labelEl) labelEl.textContent = mapLabel ? mapLabel(v) : v;
+        };
+      });
+    }
+
+    // tabs
+    $$(".tab").forEach(t => t.onclick = () => setTab(t.dataset.tab));
+
+    // search
+    $("#q").oninput = (e) => {
+      state.q = e.target.value;
+      renderLists();
+    };
+
+    // settings
+    wireToggle($("#tog-dark"), "dark");
+    wireToggle($("#tog-sync"), "sync");
+    wireToggle($("#tog-cover"), "coverText");
+    wireChips("font-chips", "data-size", "font", $("#font-val"));
+    wireChips("lead-chips", "data-lead", "lead", $("#lead-val"));
+
+    $("#row-sort").onclick = () => {
+      const opts = ["最近", "书名", "进度"];
+      const i = opts.indexOf(state.settings.sort);
+      state.settings.sort = opts[(i + 1) % opts.length];
+      $("#sort-val").textContent = state.settings.sort;
+      renderLists();
+      toast("排序：" + state.settings.sort);
+    };
+
+    $("#btn-save").onclick = () => {
+      localStorage.setItem("book-demo-settings", JSON.stringify(state.settings));
+      toast("设置已保存");
+    };
+    $("#btn-export").onclick = () => {
+      const blob = new Blob([JSON.stringify(BOOKS, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "bookshelf.json";
+      a.click();
+      toast("已导出 bookshelf.json");
+    };
+    $("#btn-reset").onclick = () => {
+      state.settings = { dark: true, font: 16, lead: "舒适", sync: true, coverText: true, sort: "最近" };
+      localStorage.removeItem("book-demo-settings");
+      location.reload();
+    };
+
+    $("#btn-back").onclick = () => {
+      if (state.selected) {
+        state.selected = null;
+        renderDetail();
+      } else if (state.tab === "settings") setTab("library");
+      else toast("已在首页");
+    };
+    $("#btn-more").onclick = () => toast("Demo · 无更多菜单");
+
+    // restore settings
+    try {
+      const raw = localStorage.getItem("book-demo-settings");
+      if (raw) Object.assign(state.settings, JSON.parse(raw));
+    } catch (_) {}
+
+    // apply restored chip UI
+    $$(`#font-chips .chip`).forEach(c => c.setAttribute("aria-pressed", +c.dataset.size === state.settings.font ? "true" : "false"));
+    $("#font-val").textContent = state.settings.font;
+    $$(`#lead-chips .chip`).forEach(c => c.setAttribute("aria-pressed", c.dataset.lead === state.settings.lead ? "true" : "false"));
+    $("#lead-val").textContent = state.settings.lead;
+    $("#sort-val").textContent = state.settings.sort;
+    $("#tog-dark").classList.toggle("on", state.settings.dark);
+    $("#tog-sync").classList.toggle("on", state.settings.sync);
+    $("#tog-cover").classList.toggle("on", state.settings.coverText);
+
+    renderLists();
+    setTab("library");
+  </script>
+</body>
+</html>
