@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1216" />
+  <meta name="design-system" content="Soft Pulse Luxe · from Soft Pulse DESIGN.md tokens" />
+  <title>午夜书架 · Soft Pulse Luxe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Soft Pulse tokens (DESIGN.md) lifted into Luxe materials — not a flat repaint */
+    :root {
+      --primary: #3b2a32;
+      --secondary: #8a6b75;
+      --tertiary: #c73b6e;
+      --tertiary-deep: #a82f5a;
+      --neutral: #fff7f9;
+      --surface: #ffffff;
+      --accent: #e86b4a;
+      --border-token: #f0d5de;
+      --muted-bg: #ffe6ef;
+
+      --ink: #1f1520;
+      --ink-soft: #4a3540;
+      --muted: #8b7380;
+      --gold: #c9a27a;
+      --gold-line: rgba(201, 162, 122, 0.42);
+      --cream: #faf6f3;
+      --glass: rgba(255, 252, 250, 0.72);
+      --glass-strong: rgba(255, 250, 248, 0.88);
+      --glass-edge: rgba(255, 255, 255, 0.55);
+      --stage-text: rgba(255, 248, 245, 0.92);
+
+      --r-lg: 22px;   /* DESIGN rounded.lg */
+      --r-md: 16px;   /* DESIGN rounded.md */
+      --r-sm: 12px;
+      --r-pill: 999px;
+
+      --font: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+      --shadow: 0 24px 60px rgba(40, 18, 28, 0.22);
+      --shadow-soft: 0 12px 32px rgba(40, 18, 28, 0.12);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --max: 430px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: #140e12;
+      overflow-x: hidden;
+    }
+
+    /* ===== Stage (material, not token flat bg) ===== */
+    .stage {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      background:
+        radial-gradient(900px 600px at 12% 8%, rgba(199, 59, 110, 0.42), transparent 55%),
+        radial-gradient(720px 520px at 92% 18%, rgba(232, 107, 74, 0.28), transparent 50%),
+        radial-gradient(800px 700px at 50% 105%, rgba(201, 162, 122, 0.22), transparent 55%),
+        linear-gradient(165deg, #1a1216 0%, #2a1822 42%, #171116 100%);
+    }
+    .stage::before {
+      content: "";
+      position: absolute; inset: -20%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(52px); opacity: 0.55;
+      animation: floaty 11s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .orb.a { width: 250px; height: 250px; left: -60px; top: 8%; background: var(--tertiary); }
+    .orb.b { width: 300px; height: 300px; right: -80px; top: 30%; background: var(--accent); animation-delay: -3.5s; }
+    .orb.c { width: 200px; height: 200px; left: 30%; bottom: 4%; background: var(--gold); opacity: 0.3; animation-delay: -6s; }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-22px) scale(1.06); }
+    }
+
+    .app {
+      position: relative; z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+      min-height: 100dvh;
+      padding: 18px 16px calc(36px + var(--safe-b));
+    }
+
+    /* top */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--stage-text); }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 14px;
+      display: grid; place-items: center;
+      font-family: var(--serif); font-weight: 700; font-size: 15px;
+      color: #fff;
+      background: linear-gradient(145deg, rgba(255,255,255,.24), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.2);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .brand-text b {
+      display: block; font-family: var(--serif);
+      font-size: 15px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .brand-text span {
+      display: block; font-size: 10px; letter-spacing: 0.16em;
+      opacity: 0.62; font-weight: 500; margin-top: 2px;
+    }
+    .pill {
+      font-size: 11px; font-weight: 600;
+      color: #fff; letter-spacing: 0.04em;
+      padding: 7px 12px;
+      border-radius: var(--r-pill);
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.16);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* glass shell */
+    .glass {
+      position: relative;
+      border-radius: 28px;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,.38);
+      box-shadow: var(--shadow), inset 0 1px 0 var(--glass-edge);
+      backdrop-filter: blur(22px) saturate(1.25);
+      -webkit-backdrop-filter: blur(22px) saturate(1.25);
+      overflow: hidden;
+    }
+    .glass::before {
+      content: "";
+      position: absolute; left: 12%; right: 12%; top: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent);
+      opacity: 0.9; pointer-events: none;
+    }
+    .glass::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, transparent 36%);
+      pointer-events: none;
+    }
+
+    /* hero */
+    .hero {
+      padding: 26px 22px 22px;
+      margin-bottom: 16px;
+    }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--tertiary-deep);
+      margin-bottom: 12px;
+    }
+    .kicker i {
+      width: 18px; height: 1px; background: var(--gold);
+      display: inline-block;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-family: var(--serif);
+      font-size: 1.72rem;
+      font-weight: 700;
+      line-height: 1.28;
+      letter-spacing: 0.02em;
+      color: var(--primary);
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(120deg, var(--tertiary), var(--accent));
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--secondary);
+    }
+    .gold-rule {
+      height: 1px; margin: 18px 0 14px;
+      background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .chip {
+      font-size: 12px; font-weight: 600;
+      color: var(--primary);
+      padding: 7px 12px;
+      border-radius: var(--r-pill);
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(240, 213, 222, 0.85);
+    }
+    .chip.on {
+      background: var(--muted-bg);
+      color: var(--tertiary);
+      border-color: rgba(199, 59, 110, 0.25);
+    }
+
+    /* featured ticket */
+    .feature {
+      margin-bottom: 16px;
+      padding: 0;
+    }
+    .feature-inner {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 14px;
+      padding: 16px;
+      position: relative; z-index: 1;
+    }
+    .cover {
+      width: 104px; height: 148px;
+      border-radius: 10px 14px 14px 10px;
+      position: relative;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.25), transparent 40%),
+        linear-gradient(165deg, #5c2a3d 0%, #3b2a32 45%, #1f1520 100%);
+      border: 1px solid rgba(255,255,255,.28);
+      box-shadow:
+        inset 4px 0 0 rgba(255,255,255,.12),
+        0 14px 28px rgba(40, 18, 28, 0.28);
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px 10px;
+      color: #fff;
+    }
+    .cover .mark {
+      position: absolute; top: 10px; left: 10px;
+      font-size: 9px; letter-spacing: 0.12em;
+      opacity: 0.75; font-weight: 600;
+    }
+    .cover .ct {
+      font-family: var(--serif);
+      font-size: 13px; font-weight: 700; line-height: 1.25;
+    }
+    .feature h2 {
+      margin: 2px 0 6px;
+      font-family: var(--serif);
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--primary); letter-spacing: 0.02em;
+    }
+    .feature .by {
+      font-size: 12px; color: var(--muted); margin-bottom: 8px;
+    }
+    .feature .blurb {
+      font-size: 13px; line-height: 1.55; color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    .progress {
+      height: 5px; border-radius: 99px;
+      background: rgba(59, 42, 50, 0.08);
+      overflow: hidden; margin-bottom: 6px;
+    }
+    .progress > i {
+      display: block; height: 100%; width: 62%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--tertiary), var(--accent));
+      box-shadow: 0 0 12px rgba(199, 59, 110, 0.35);
+    }
+    .progress-label {
+      font-size: 11px; color: var(--muted);
+      display: flex; justify-content: space-between;
+    }
+
+    /* section title on stage */
+    .sec {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin: 8px 4px 10px;
+      color: var(--stage-text);
+    }
+    .sec h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 1.05rem; font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .sec span {
+      font-size: 11px; opacity: 0.65; letter-spacing: 0.06em;
+    }
+
+    /* book grid cards */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .book-card {
+      padding: 12px 12px 14px;
+      border-radius: 20px;
+      background: rgba(255, 252, 250, 0.7);
+      border: 1px solid rgba(255,255,255,.4);
+      box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.55);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      cursor: pointer;
+      text-align: left;
+      color: inherit; font: inherit;
+      width: 100%;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .book-card:active { transform: scale(0.98); }
+    .book-card.is-on {
+      outline: 1.5px solid rgba(199, 59, 110, 0.45);
+      box-shadow: 0 16px 36px rgba(199, 59, 110, 0.18), inset 0 1px 0 rgba(255,255,255,.55);
+    }
+    .mini-cover {
+      height: 88px; border-radius: 12px;
+      margin-bottom: 10px;
+      display: grid; place-items: end start;
+      padding: 10px;
+      color: #fff;
+      font-family: var(--serif);
+      font-size: 13px; font-weight: 700;
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: inset 3px 0 0 rgba(255,255,255,.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .mini-cover::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.12) 50%, transparent 60%);
+    }
+    .mini-cover.s1 { background: linear-gradient(160deg, #c73b6e, #3b2a32); }
+    .mini-cover.s2 { background: linear-gradient(160deg, #e86b4a, #4a2a30); }
+    .mini-cover.s3 { background: linear-gradient(160deg, #8a6b75, #2a1a22); }
+    .mini-cover.s4 { background: linear-gradient(160deg, #c9a27a, #3b2a32); }
+    .book-card .t {
+      font-family: var(--serif);
+      font-size: 14px; font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.02em;
+      margin-bottom: 3px;
+    }
+    .book-card .a {
+      font-size: 11px; color: var(--muted);
+    }
+    .book-card .tags {
+      margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;
+    }
+    .tag {
+      font-size: 10px; font-weight: 600;
+      color: var(--tertiary);
+      background: var(--muted-bg);
+      border-radius: var(--r-pill);
+      padding: 3px 7px;
+    }
+
+    /* quote strip */
+    .quote {
+      padding: 18px 18px 16px;
+      margin-bottom: 16px;
+    }
+    .quote blockquote {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .quote cite {
+      display: block; margin-top: 10px;
+      font-style: normal;
+      font-size: 12px; color: var(--muted);
+    }
+
+    /* CTA */
+    .cta-block {
+      padding: 18px 16px 16px;
+      margin-bottom: 12px;
+    }
+    .cta-block h4 {
+      margin: 0 0 6px;
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+    .cta-block p {
+      margin: 0 0 14px;
+      font-size: 13px; color: var(--secondary); line-height: 1.5;
+    }
+    .btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; min-height: 50px;
+      border: none; cursor: pointer;
+      border-radius: var(--r-md);
+      font-family: var(--font);
+      font-size: 1.02rem; font-weight: 700;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--tertiary) 0%, var(--tertiary-deep) 55%, #8f284c 100%);
+      box-shadow: 0 12px 28px rgba(199, 59, 110, 0.35), inset 0 1px 0 rgba(255,255,255,.28);
+    }
+    .btn-primary::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.28) 48%, transparent 62%);
+      transform: translateX(-120%);
+      animation: sheen 4.5s ease-in-out infinite;
+    }
+    @keyframes sheen {
+      0%, 55%, 100% { transform: translateX(-120%); }
+      70% { transform: translateX(120%); }
+    }
+    .btn-primary:active { transform: translateY(1px); filter: brightness(.96); }
+    .btn-secondary {
+      margin-top: 8px;
+      color: var(--primary);
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(240, 213, 222, 0.9);
+    }
+
+    .foot {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,248,245,.45);
+      letter-spacing: 0.04em;
+      margin-top: 8px;
+    }
+
+    /* toast */
+    #toast {
+      position: fixed; left: 50%; bottom: calc(28px + var(--safe-b));
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(31, 21, 32, 0.92);
+      color: #fff;
+      padding: 11px 16px;
+      border-radius: 999px;
+      font-size: 13px; font-weight: 600;
+      z-index: 50;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      border: 1px solid rgba(255,255,255,.12);
+      max-width: 88%;
+      text-align: center;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 360px) {
+      .hero h1 { font-size: 1.5rem; }
+      .feature-inner { grid-template-columns: 88px 1fr; }
+      .cover { width: 88px; height: 128px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" aria-hidden="true">
+    <div class="orb a"></div>
+    <div class="orb b"></div>
+    <div class="orb c"></div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">书</div>
+        <div class="brand-text">
+          <b>午夜书架</b>
+          <span>SOFT PULSE LUXE</span>
+        </div>
+      </div>
+      <div class="pill">精选展架</div>
+    </header>
+
+    <section class="glass hero">
+      <div class="kicker"><i></i> Private Library</div>
+      <h1>把夜晚交给<br /><em>一本书</em> 的呼吸</h1>
+      <p>基于 Soft Pulse 色板的轻奢展架：舞台光、玻璃卡与衬线标题——不是简单粉白换色。</p>
+      <div class="gold-rule"></div>
+      <div class="hero-meta">
+        <span class="chip on">本周精选</span>
+        <span class="chip">6 本在架</span>
+        <span class="chip">衬线 · 玻璃</span>
+      </div>
+    </section>
+
+    <section class="glass feature" id="feature">
+      <div class="feature-inner">
+        <div class="cover">
+          <span class="mark">FEATURED</span>
+          <span class="ct">人类<br />简史</span>
+        </div>
+        <div>
+          <h2 id="f-title">人类简史</h2>
+          <div class="by" id="f-by">尤瓦尔·赫拉利 · 非虚构</div>
+          <p class="blurb" id="f-blurb">从认知革命到科学革命，用一条温柔而锋利的叙事线，重新理解我们为何成为「人类」。</p>
+          <div class="progress" aria-hidden="true"><i id="f-bar" style="width:62%"></i></div>
+          <div class="progress-label"><span>阅读进度</span><span id="f-pct">62%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sec">
+      <h3>在架书目</h3>
+      <span>点选切换主展</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <section class="glass quote">
+      <blockquote id="quote">「我们研究历史，不是为了知道未来，而是为了拓宽当下的可能性。」</blockquote>
+      <cite id="quote-cite">— 选自《人类简史》</cite>
+    </section>
+
+    <section class="glass cta-block">
+      <h4>开启今晚的阅读</h4>
+      <p>主按钮使用 Soft Pulse tertiary（#C73B6E），带光泽扫过——Luxe 材质，而非扁平粉块。</p>
+      <button type="button" class="btn btn-primary" id="btn-read">继续阅读精选</button>
+      <button type="button" class="btn btn-secondary" id="btn-list">加入想读清单</button>
+    </section>
+
+    <p class="foot">DESIGN.md Soft Pulse · Shell: Luxe · 玻璃 / 舞台 / 衬线</p>
+  </div>
+
+  <div id="toast" role="status"></div>
+
+  <script>
+    const BOOKS = [
+      {
+        id: 1, title: "人类简史", author: "尤瓦尔·赫拉利", tag: "非虚构",
+        style: "s1", progress: 62,
+        blurb: "从认知革命到科学革命，用一条温柔而锋利的叙事线，重新理解我们为何成为「人类」。",
+        quote: "我们研究历史，不是为了知道未来，而是为了拓宽当下的可能性。",
+      },
+      {
+        id: 2, title: "原则", author: "瑞·达利欧", tag: "思维",
+        style: "s2", progress: 28,
+        blurb: "把人生与工作拆成可迭代的原则系统：在不确定里，仍然有迹可循。",
+        quote: "痛苦 + 反思 = 进步。",
+      },
+      {
+        id: 3, title: "三体", author: "刘慈欣", tag: "科幻",
+        style: "s3", progress: 0,
+        blurb: "文明的尺度被拉到光年之外。寂静的宇宙里，每一个选择都沉重如星。",
+        quote: "给岁月以文明，而不是给文明以岁月。",
+      },
+      {
+        id: 4, title: "设计中的设计", author: "原研哉", tag: "设计",
+        style: "s4", progress: 15,
+        blurb: "清空多余装饰，让物回到「被感知」本身——极简不是少，是刚刚好。",
+        quote: "设计不是装饰，而是一种发现。",
+      },
+      {
+        id: 5, title: "小王子", author: "圣埃克苏佩里", tag: "文学",
+        style: "s1", progress: 100,
+        blurb: "写给大人的童话：关于驯养、告别，以及那些眼睛看不见的本质。",
+        quote: "只有用心才能看得清。",
+      },
+      {
+        id: 6, title: "代码整洁之道", author: "Robert C. Martin", tag: "工程",
+        style: "s2", progress: 100,
+        blurb: "把软件写成让人愿意阅读的文章：命名、结构、边界——专业的日常仪式。",
+        quote: "Clean code always looks like it was written by someone who cares.",
+      },
+    ];
+
+    let selected = BOOKS[0];
+
+    const $ = (s) => document.querySelector(s);
+    function toast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(t._id);
+      t._id = setTimeout(() => t.classList.remove("show"), 1700);
+    }
+
+    function renderGrid() {
+      $("#grid").innerHTML = BOOKS.map((b) => `
+        <button type="button" class="book-card${b.id === selected.id ? " is-on" : ""}" data-id="${b.id}">
+          <div class="mini-cover ${b.style}">${b.title.slice(0, 2)}</div>
+          <div class="t">${b.title}</div>
+          <div class="a">${b.author}</div>
+          <div class="tags"><span class="tag">${b.tag}</span></div>
+        </button>
+      `).join("");
+      document.querySelectorAll(".book-card").forEach((el) => {
+        el.onclick = () => {
+          selected = BOOKS.find((x) => x.id === +el.dataset.id);
+          paintFeature();
+          renderGrid();
+          toast(`已切换：${selected.title}`);
+        };
+      });
+    }
+
+    function paintFeature() {
+      const b = selected;
+      $("#f-title").textContent = b.title;
+      $("#f-by").textContent = `${b.author} · ${b.tag}`;
+      $("#f-blurb").textContent = b.blurb;
+      $("#f-bar").style.width = b.progress + "%";
+      $("#f-pct").textContent = b.progress + "%";
+      $("#quote").textContent = `「${b.quote}」`;
+      $("#quote-cite").textContent = `— 选自《${b.title}》`;
+      const cover = document.querySelector(".cover .ct");
+      if (cover) {
+        const parts = b.title.length > 4
+          ? [b.title.slice(0, 2), b.title.slice(2, 4)]
+          : [b.title];
+        cover.innerHTML = parts.join("<br />");
+      }
+    }
+
+    $("#btn-read").onclick = () => toast(`打开《${selected.title}》· 进度 ${selected.progress}%`);
+    $("#btn-list").onclick = () => toast(`已加入想读：${selected.title}`);
+
+    renderGrid();
+    paintFeature();
+  </script>
+</body>
+</html>
