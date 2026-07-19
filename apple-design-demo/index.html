@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#F2F2F7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Apple Design 手感 Demo</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #F2F2F7;
+      --bg-elevated: #FFFFFF;
+      --label: #000000;
+      --secondary: rgba(60, 60, 67, 0.6);
+      --tertiary: rgba(60, 60, 67, 0.3);
+      --separator: rgba(60, 60, 67, 0.18);
+      --fill: rgba(120, 120, 128, 0.16);
+      --blue: #007AFF;
+      --green: #34C759;
+      --orange: #FF9500;
+      --red: #FF3B30;
+      --glass: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.55);
+      --scrim: rgba(0, 0, 0, 0.28);
+      --shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+        "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC",
+        "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --bg-elevated: #1C1C1E;
+        --label: #FFFFFF;
+        --secondary: rgba(235, 235, 245, 0.6);
+        --tertiary: rgba(235, 235, 245, 0.3);
+        --separator: rgba(84, 84, 88, 0.65);
+        --fill: rgba(120, 120, 128, 0.32);
+        --glass: rgba(28, 28, 30, 0.78);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --scrim: rgba(0, 0, 0, 0.5);
+        --shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+        --theme-meta: #000000;
+      }
+      meta[name="theme-color"] { content: #000000; }
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #0b0b0f;
+      font-family: var(--font);
+      color: var(--label);
+      overscroll-behavior: none;
+      touch-action: pan-y;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .stage {
+      width: min(100%, 430px);
+      height: min(100dvh - 32px, 900px);
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 30px 80px rgba(0,0,0,0.45);
+      isolation: isolate;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0; background: var(--bg); }
+      .stage {
+        width: 100%;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    .status {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 30;
+      height: calc(44px + var(--safe-t));
+      padding: var(--safe-t) 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      pointer-events: none;
+    }
+
+    .status .pills {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      opacity: 0.9;
+    }
+    .status .bar {
+      width: 18px; height: 10px;
+      border: 1.5px solid currentColor;
+      border-radius: 3px;
+      position: relative;
+      opacity: 0.85;
+    }
+    .status .bar::after {
+      content: "";
+      position: absolute;
+      inset: 1.5px 4px 1.5px 1.5px;
+      background: currentColor;
+      border-radius: 1px;
+    }
+
+    .nav {
+      position: absolute;
+      top: calc(44px + var(--safe-t));
+      left: 0; right: 0;
+      z-index: 20;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: var(--glass);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 0.5px solid var(--separator);
+    }
+
+    .nav .title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font: inherit;
+      font-size: 17px;
+      font-weight: 500;
+      padding: 8px 4px;
+      cursor: pointer;
+      transition: transform 100ms ease-out, opacity 100ms ease-out;
+    }
+    .nav-btn:active { transform: scale(0.96); opacity: 0.55; }
+
+    .content {
+      position: absolute;
+      inset: 0;
+      padding:
+        calc(96px + var(--safe-t)) 16px
+        calc(108px + var(--safe-b));
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .hero {
+      margin: 8px 4px 18px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 8vw, 34px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--secondary);
+      font-size: 15px;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      padding: 4px 0;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+      overflow: hidden;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      min-height: 52px;
+      position: relative;
+      user-select: none;
+      cursor: pointer;
+      transition: background 80ms linear, transform 100ms ease-out;
+    }
+    .row:active { background: var(--fill); }
+    .row + .row::before {
+      content: "";
+      position: absolute;
+      left: 56px; right: 0; top: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+
+    .icon {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    .icon.blue { background: var(--blue); }
+    .icon.green { background: var(--green); }
+    .icon.orange { background: var(--orange); }
+    .icon.red { background: var(--red); }
+    .icon.purple { background: #AF52DE; }
+
+    .row .meta { flex: 1; min-width: 0; }
+    .row .meta .name {
+      font-size: 17px;
+      letter-spacing: -0.02em;
+      font-weight: 400;
+    }
+    .row .meta .sub {
+      margin-top: 2px;
+      font-size: 13px;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+    }
+    .chev {
+      color: var(--tertiary);
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .section-label {
+      margin: 18px 16px 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--secondary);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      padding: 12px 16px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .pill-row::-webkit-scrollbar { display: none; }
+
+    .chip {
+      appearance: none;
+      border: 0;
+      background: var(--fill);
+      color: var(--label);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 100ms ease-out, background 120ms ease-out, color 120ms ease-out;
+    }
+    .chip:active { transform: scale(0.96); }
+    .chip.on {
+      background: var(--label);
+      color: var(--bg-elevated);
+    }
+
+    .press-demo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      min-height: 50px;
+      padding: 12px 16px;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+      transition: transform 100ms ease-out, opacity 100ms ease-out, filter 100ms ease-out;
+      will-change: transform;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+    }
+    .btn.secondary {
+      background: var(--fill);
+      color: var(--blue);
+    }
+    .btn.block {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .toggle {
+      width: 51px;
+      height: 31px;
+      border-radius: 999px;
+      background: var(--fill);
+      position: relative;
+      flex: 0 0 auto;
+      transition: background 180ms ease-out;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+    .toggle.on { background: var(--green); }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 27px; height: 27px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      transition: transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1.05);
+    }
+    .toggle.on::after { transform: translateX(20px); }
+
+    .hint {
+      margin: 8px 16px 0;
+      color: var(--secondary);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .tabbar {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      z-index: 25;
+      height: calc(84px + var(--safe-b));
+      padding: 8px 18px calc(10px + var(--safe-b));
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--glass);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-top: 0.5px solid var(--separator);
+    }
+    .tab {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--secondary);
+      font: inherit;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: transform 100ms ease-out, color 120ms ease-out;
+    }
+    .tab:active { transform: scale(0.95); }
+    .tab.on { color: var(--blue); }
+    .tab .glyph {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .tab span {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    /* Sheet / scrim */
+    .scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      background: var(--scrim);
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+    .scrim.show { pointer-events: auto; }
+
+    .sheet {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      z-index: 50;
+      height: min(72%, 620px);
+      background: var(--bg-elevated);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      box-shadow: var(--shadow);
+      transform: translate3d(0, 110%, 0);
+      will-change: transform;
+      touch-action: none;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .grabber-wrap {
+      padding: 10px 0 6px;
+      display: grid;
+      place-items: center;
+      cursor: grab;
+      flex: 0 0 auto;
+    }
+    .grabber {
+      width: 36px;
+      height: 5px;
+      border-radius: 99px;
+      background: var(--tertiary);
+    }
+
+    .sheet-head {
+      padding: 4px 20px 12px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex: 0 0 auto;
+    }
+    .sheet-head h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+    .sheet-head button {
+      appearance: none;
+      border: 0;
+      background: var(--fill);
+      color: var(--label);
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 100ms ease-out;
+    }
+    .sheet-head button:active { transform: scale(0.92); }
+
+    .sheet-body {
+      padding: 0 16px calc(22px + var(--safe-b));
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      flex: 1;
+    }
+
+    .sheet-card {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .sheet-card h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+    .sheet-card p {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    /* Draggable floating card */
+    .drag-arena {
+      position: relative;
+      height: 220px;
+      margin: 0 16px 16px;
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0,122,255,0.14), transparent 45%),
+        radial-gradient(circle at 80% 70%, rgba(175,82,222,0.12), transparent 40%),
+        var(--bg-elevated);
+      overflow: hidden;
+      touch-action: none;
+    }
+    .drag-card {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 150px;
+      height: 96px;
+      margin: -48px 0 0 -75px;
+      border-radius: 18px;
+      background: var(--glass);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.16);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      cursor: grab;
+      user-select: none;
+      will-change: transform;
+      touch-action: none;
+    }
+    .drag-card:active { cursor: grabbing; }
+    .drag-card small {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100px + var(--safe-b));
+      transform: translate(-50%, 20px);
+      z-index: 60;
+      background: rgba(28,28,30,0.92);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      will-change: transform, opacity;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .chip, .nav-btn, .tab, .row, .toggle, .toggle::after {
+        transition: none !important;
+      }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .nav, .tabbar, .drag-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: var(--bg-elevated) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="status">
+      <div id="clock">9:41</div>
+      <div class="pills">
+        <span style="font-size:12px;letter-spacing:-0.02em">5G</span>
+        <span class="bar" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <header class="nav">
+      <button class="nav-btn" id="editBtn" type="button">编辑</button>
+      <div class="title">手感实验室</div>
+      <button class="nav-btn" id="doneBtn" type="button">完成</button>
+    </header>
+
+    <main class="content" id="content">
+      <div class="hero">
+        <h1>像 iOS 一样<br>跟着手势呼吸</h1>
+        <p>基于 Emil Kowalski 的 <b>apple-design</b> Skill：即时反馈、1:1 拖拽、可打断弹簧、动量投射、橡皮筋边界与毛玻璃层级。</p>
+      </div>
+
+      <div class="section-label">按压反馈</div>
+      <div class="card">
+        <div class="press-demo">
+          <button class="btn primary" id="primaryBtn" type="button">主按钮</button>
+          <button class="btn secondary" id="secondaryBtn" type="button">次按钮</button>
+        </div>
+        <p class="hint" style="margin:0 16px 14px">反馈在 <b>pointerdown</b> 立刻发生，而不是等 click。</p>
+      </div>
+
+      <div class="section-label">列表与开关</div>
+      <div class="card">
+        <div class="row" id="openSheetRow" role="button" tabindex="0">
+          <div class="icon blue">☰</div>
+          <div class="meta">
+            <div class="name">打开底部弹层</div>
+            <div class="sub">拖动手势 · 可打断 · 动量关闭</div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="row" id="hapticRow" role="button" tabindex="0">
+          <div class="icon green">◎</div>
+          <div class="meta">
+            <div class="name">触感反馈</div>
+            <div class="sub">成功动作时轻振（支持时）</div>
+          </div>
+          <button class="toggle on" id="hapticToggle" type="button" aria-label="触感开关" aria-pressed="true"></button>
+        </div>
+        <div class="row" id="bounceRow" role="button" tabindex="0">
+          <div class="icon orange">⇢</div>
+          <div class="meta">
+            <div class="name">轻弹回弹</div>
+            <div class="sub">仅在有动量时允许 overshoot</div>
+          </div>
+          <button class="toggle on" id="bounceToggle" type="button" aria-label="回弹开关" aria-pressed="true"></button>
+        </div>
+      </div>
+
+      <div class="section-label">拖拽卡片</div>
+      <div class="drag-arena" id="arena" aria-label="拖拽区域">
+        <div class="drag-card" id="dragCard">
+          拖我 / 甩我
+          <small>1:1 跟随 · 橡皮筋 · 弹簧回中</small>
+        </div>
+      </div>
+
+      <div class="section-label">快速标签</div>
+      <div class="card">
+        <div class="pill-row" id="chips">
+          <button class="chip on" type="button" data-v="spring">弹簧</button>
+          <button class="chip" type="button" data-v="sheet">弹层</button>
+          <button class="chip" type="button" data-v="glass">毛玻璃</button>
+          <button class="chip" type="button" data-v="type">字距</button>
+          <button class="chip" type="button" data-v="a11y">无障碍</button>
+        </div>
+      </div>
+
+      <p class="hint">提示：在弹层滑动中途再反向拖，不必等动画播完。这就是 apple-design 强调的可打断性。</p>
+    </main>
+
+    <nav class="tabbar" aria-label="底部导航">
+      <button class="tab on" type="button" data-tab="lab">
+        <div class="glyph">◆</div>
+        <span>实验室</span>
+      </button>
+      <button class="tab" type="button" data-tab="sheet">
+        <div class="glyph">▭</div>
+        <span>弹层</span>
+      </button>
+      <button class="tab" type="button" data-tab="about">
+        <div class="glyph">ⓘ</div>
+        <span>关于</span>
+      </button>
+    </nav>
+
+    <div class="scrim" id="scrim"></div>
+    <section class="sheet" id="sheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="grabber-wrap" id="sheetHandle">
+        <div class="grabber"></div>
+      </div>
+      <div class="sheet-head">
+        <h2 id="sheetTitle">流体弹层</h2>
+        <button type="button" id="sheetClose" aria-label="关闭">×</button>
+      </div>
+      <div class="sheet-body">
+        <div class="sheet-card">
+          <h3>1:1 跟踪</h3>
+          <p>手指下移时弹层贴着手走，不会等松手才动。抓取偏移被保留。</p>
+        </div>
+        <div class="sheet-card">
+          <h3>动量投射</h3>
+          <p>松手时根据速度预测落点，决定是回弹打开还是继续关闭——不是只看当前位置。</p>
+        </div>
+        <div class="sheet-card">
+          <h3>可打断</h3>
+          <p>关闭到一半再往上拖，会立刻接管当前呈现值，而不是先播完旧动画。</p>
+        </div>
+        <div class="sheet-card">
+          <h3>橡皮筋边界</h3>
+          <p>向上越过打开位置时会有阻尼，像 iOS 滚动到尽头的感觉。</p>
+        </div>
+        <button class="btn primary block" id="sheetAction" type="button">完成并关闭</button>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+    (() => {
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const state = {
+        haptic: true,
+        bounce: true,
+        sheetOpen: false,
+      };
+
+      // ── Clock ─────────────────────────────────────────────
+      const clockEl = document.getElementById('clock');
+      const tickClock = () => {
+        const d = new Date();
+        clockEl.textContent = `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+      };
+      tickClock();
+      setInterval(tickClock, 15000);
+
+      // ── Toast / haptics ───────────────────────────────────
+      const toastEl = document.getElementById('toast');
+      let toastAnim = null;
+      function toast(msg) {
+        toastEl.textContent = msg;
+        if (toastAnim) toastAnim.cancel();
+        if (reducedMotion) {
+          toastEl.style.opacity = '1';
+          toastEl.style.transform = 'translate(-50%, 0)';
+          clearTimeout(toastEl._t);
+          toastEl._t = setTimeout(() => {
+            toastEl.style.opacity = '0';
+          }, 1400);
+          return;
+        }
+        toastAnim = toastEl.animate([
+          { opacity: 0, transform: 'translate(-50%, 16px)' },
+          { opacity: 1, transform: 'translate(-50%, 0)', offset: 0.18 },
+          { opacity: 1, transform: 'translate(-50%, 0)', offset: 0.78 },
+          { opacity: 0, transform: 'translate(-50%, 8px)' },
+        ], { duration: 1800, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' });
+      }
+
+      function buzz(kind = 'light') {
+        if (!state.haptic || !navigator.vibrate) return;
+        if (kind === 'success') navigator.vibrate([8, 30, 12]);
+        else if (kind === 'medium') navigator.vibrate(12);
+        else navigator.vibrate(8);
+      }
+
+      // ── Spring engine (interruptible) ─────────────────────
+      // Critical-ish default; bounce only when requested.
+      function createSpring({ mass = 1, stiffness = 180, damping = 24 } = {}) {
+        let value = 0, velocity = 0, target = 0, running = false, raf = 0;
+        const listeners = new Set();
+        let last = 0;
+
+        function setParams(p = {}) {
+          if (p.mass != null) mass = p.mass;
+          if (p.stiffness != null) stiffness = p.stiffness;
+          if (p.damping != null) damping = p.damping;
+        }
+
+        function notify() {
+          listeners.forEach((fn) => fn(value, velocity));
+        }
+
+        function step(ts) {
+          if (!last) last = ts;
+          // clamp large frames (tab switch)
+          let dt = Math.min(0.032, (ts - last) / 1000);
+          last = ts;
+
+          // semi-implicit Euler, multi-substep for stability
+          const sub = Math.max(1, Math.ceil(dt / 0.008));
+          const h = dt / sub;
+          for (let i = 0; i < sub; i++) {
+            const force = -stiffness * (value - target) - damping * velocity;
+            const acc = force / mass;
+            velocity += acc * h;
+            value += velocity * h;
+          }
+
+          notify();
+
+          const settled = Math.abs(value - target) < 0.05 && Math.abs(velocity) < 2;
+          if (settled) {
+            value = target;
+            velocity = 0;
+            running = false;
+            raf = 0;
+            last = 0;
+            notify();
+            return;
+          }
+          raf = requestAnimationFrame(step);
+        }
+
+        function start() {
+          if (running) return;
+          running = true;
+          last = 0;
+          raf = requestAnimationFrame(step);
+        }
+
+        return {
+          get value() { return value; },
+          get velocity() { return velocity; },
+          get target() { return target; },
+          setParams,
+          on(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+          // jump presentation without killing continuity of listeners
+          set(v, vel = 0) {
+            value = v;
+            velocity = vel;
+            notify();
+          },
+          // retarget from current presentation; optionally inject velocity
+          to(t, { velocity: v0, bounce } = {}) {
+            target = t;
+            if (v0 != null) velocity = v0;
+            if (bounce === true) setParams({ stiffness: 170, damping: 16, mass: 1 });
+            else if (bounce === false) setParams({ stiffness: 210, damping: 28, mass: 1 });
+            start();
+          },
+          stop() {
+            if (raf) cancelAnimationFrame(raf);
+            running = false;
+            raf = 0;
+            last = 0;
+          },
+        };
+      }
+
+      function rubberband(overshoot, dimension, constant = 0.55) {
+        return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
+      }
+
+      // Apple-like projection (Designing Fluid Interfaces)
+      function project(initialVelocity, decelerationRate = 0.998) {
+        return (initialVelocity / 1000) * decelerationRate / (1 - decelerationRate);
+      }
+
+      // Velocity tracker from recent samples
+      function createVelocityTracker() {
+        const samples = [];
+        return {
+          reset() { samples.length = 0; },
+          add(y, t = performance.now()) {
+            samples.push({ y, t });
+            while (samples.length > 6) samples.shift();
+            // drop samples older than 100ms
+            const cut = t - 100;
+            while (samples.length > 2 && samples[0].t < cut) samples.shift();
+          },
+          velocity() {
+            if (samples.length < 2) return 0;
+            const a = samples[0];
+            const b = samples[samples.length - 1];
+            const dt = (b.t - a.t) / 1000;
+            if (dt <= 0) return 0;
+            return (b.y - a.y) / dt; // px/s
+          },
+        };
+      }
+
+      // ── Buttons / toggles / chips ──────────────────────────
+      const hapticToggle = document.getElementById('hapticToggle');
+      const bounceToggle = document.getElementById('bounceToggle');
+      function wireToggle(btn, key) {
+        const apply = () => {
+          btn.classList.toggle('on', state[key]);
+          btn.setAttribute('aria-pressed', String(state[key]));
+        };
+        const flip = (e) => {
+          e.stopPropagation();
+          state[key] = !state[key];
+          apply();
+          buzz('light');
+          toast(key === 'haptic'
+            ? (state.haptic ? '触感：开' : '触感：关')
+            : (state.bounce ? '轻弹回弹：开' : '轻弹回弹：关'));
+        };
+        btn.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
+        btn.addEventListener('click', flip);
+        apply();
+      }
+      wireToggle(hapticToggle, 'haptic');
+      wireToggle(bounceToggle, 'bounce');
+
+      document.getElementById('hapticRow').addEventListener('click', (e) => {
+        if (e.target === hapticToggle) return;
+        hapticToggle.click();
+      });
+      document.getElementById('bounceRow').addEventListener('click', (e) => {
+        if (e.target === bounceToggle) return;
+        bounceToggle.click();
+      });
+
+      document.getElementById('primaryBtn').addEventListener('pointerdown', () => {
+        buzz('medium');
+        toast('主按钮按下');
+      });
+      document.getElementById('secondaryBtn').addEventListener('pointerdown', () => {
+        buzz('light');
+        toast('次按钮按下');
+      });
+      document.getElementById('editBtn').addEventListener('pointerdown', () => toast('编辑'));
+      document.getElementById('doneBtn').addEventListener('pointerdown', () => {
+        buzz('success');
+        toast('完成');
+      });
+
+      document.getElementById('chips').addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        document.querySelectorAll('.chip').forEach((c) => c.classList.remove('on'));
+        chip.classList.add('on');
+        const map = {
+          spring: '弹簧：可打断、带初速度',
+          sheet: '弹层：投影落点 + 橡皮筋',
+          glass: '毛玻璃：层级不叠糊',
+          type: '字距：大标题负 tracking',
+          a11y: '无障碍：减少动态/透明度',
+        };
+        toast(map[chip.dataset.v] || chip.textContent);
+        buzz('light');
+      });
+
+      // Tabs
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('on'));
+          tab.classList.add('on');
+          const k = tab.dataset.tab;
+          if (k === 'sheet') openSheet();
+          else if (k === 'about') {
+            toast('emilkowalski/skills · apple-design');
+            buzz('light');
+          } else toast('实验室');
+        });
+      });
+
+      // ── Drag card ─────────────────────────────────────────
+      const arena = document.getElementById('arena');
+      const dragCard = document.getElementById('dragCard');
+      const dragSpringX = createSpring({ stiffness: 180, damping: 24 });
+      const dragSpringY = createSpring({ stiffness: 180, damping: 24 });
+      let dragX = 0, dragY = 0;
+      const applyDragTransform = () => {
+        dragCard.style.transform = `translate3d(${dragX}px, ${dragY}px, 0)`;
+      };
+      dragSpringX.on((v) => { dragX = v; applyDragTransform(); });
+      dragSpringY.on((v) => { dragY = v; applyDragTransform(); });
+
+      const velX = createVelocityTracker();
+      const velY = createVelocityTracker();
+      let draggingCard = false;
+      let grabDX = 0, grabDY = 0;
+
+      function bounds() {
+        const a = arena.getBoundingClientRect();
+        const c = dragCard.getBoundingClientRect();
+        const maxX = (a.width - c.width) / 2 + 8;
+        const maxY = (a.height - c.height) / 2 + 8;
+        return { maxX: Math.max(24, maxX), maxY: Math.max(24, maxY), aw: a.width, ah: a.height };
+      }
+
+      function clampRubber(x, y) {
+        const { maxX, maxY, aw, ah } = bounds();
+        let nx = x, ny = y;
+        if (x > maxX) nx = maxX + rubberband(x - maxX, aw);
+        else if (x < -maxX) nx = -maxX - rubberband(-maxX - x, aw);
+        if (y > maxY) ny = maxY + rubberband(y - maxY, ah);
+        else if (y < -maxY) ny = -maxY - rubberband(-maxY - y, ah);
+        return { x: nx, y: ny };
+      }
+
+      dragCard.addEventListener('pointerdown', (e) => {
+        if (e.button != null && e.button !== 0) return;
+        draggingCard = true;
+        dragCard.setPointerCapture(e.pointerId);
+        dragSpringX.stop();
+        dragSpringY.stop();
+        const rect = dragCard.getBoundingClientRect();
+        // respect grab point — stay glued under the finger
+        grabDX = e.clientX - (rect.left + rect.width / 2);
+        grabDY = e.clientY - (rect.top + rect.height / 2);
+        velX.reset();
+        velY.reset();
+        velX.add(dragX, e.timeStamp);
+        velY.add(dragY, e.timeStamp);
+        buzz('light');
+      });
+
+      dragCard.addEventListener('pointermove', (e) => {
+        if (!draggingCard) return;
+        const a = arena.getBoundingClientRect();
+        const cx = a.left + a.width / 2;
+        const cy = a.top + a.height / 2;
+        let x = e.clientX - cx - grabDX;
+        let y = e.clientY - cy - grabDY;
+        ({ x, y } = clampRubber(x, y));
+        dragX = x;
+        dragY = y;
+        dragSpringX.set(x, 0);
+        dragSpringY.set(y, 0);
+        applyDragTransform();
+        velX.add(x, e.timeStamp);
+        velY.add(y, e.timeStamp);
+      });
+
+      function endCardDrag() {
+        if (!draggingCard) return;
+        draggingCard = false;
+        const vx = velX.velocity();
+        const vy = velY.velocity();
+        // project for feel; only snap point is origin, hand off release velocity
+        void (dragX + project(vx));
+        void (dragY + project(vy));
+        const speed = Math.hypot(vx, vy);
+        const useBounce = state.bounce && speed > 900;
+        dragSpringX.to(0, { velocity: vx, bounce: useBounce });
+        dragSpringY.to(0, { velocity: vy, bounce: useBounce });
+        if (speed > 1200) {
+          buzz('medium');
+          toast('甩出 · 弹簧回中');
+        }
+      }
+      dragCard.addEventListener('pointerup', endCardDrag);
+      dragCard.addEventListener('pointercancel', endCardDrag);
+
+      // ── Bottom sheet ──────────────────────────────────────
+      const sheet = document.getElementById('sheet');
+      const scrim = document.getElementById('scrim');
+      const sheetHandle = document.getElementById('sheetHandle');
+      const sheetSpring = createSpring({ stiffness: 220, damping: 28 });
+      // progress 0 = closed (translateY = height), 1 = open (translateY = 0)
+      let sheetProgress = 0; // 0..1+ rubber
+      let sheetHeight = 0;
+      let sheetDragging = false;
+      const sheetVel = createVelocityTracker();
+
+      function measureSheet() {
+        sheetHeight = sheet.getBoundingClientRect().height || sheet.offsetHeight || 500;
+      }
+
+      function renderSheet(p) {
+        sheetProgress = p;
+        measureSheet();
+        // p=1 => y=0; p=0 => y=height
+        let y = (1 - p) * sheetHeight;
+        // rubber above open (p>1)
+        if (p > 1) {
+          const over = (p - 1) * sheetHeight;
+          y = -rubberband(over, sheetHeight, 0.55);
+        }
+        sheet.style.transform = `translate3d(0, ${y}px, 0)`;
+        const op = Math.max(0, Math.min(1, p));
+        scrim.style.opacity = String(0.0 + op * 1);
+        scrim.classList.toggle('show', op > 0.02);
+        sheet.setAttribute('aria-hidden', String(op < 0.02));
+      }
+
+      sheetSpring.on((v) => renderSheet(v));
+
+      function openSheet() {
+        measureSheet();
+        state.sheetOpen = true;
+        // start from current presentation
+        sheetSpring.set(sheetProgress, sheetSpring.velocity);
+        if (reducedMotion) {
+          sheetSpring.set(1, 0);
+          renderSheet(1);
+        } else {
+          sheetSpring.to(1, { bounce: false });
+        }
+        document.querySelectorAll('.tab').forEach((t) => {
+          t.classList.toggle('on', t.dataset.tab === 'sheet');
+        });
+      }
+
+      function closeSheet(velocity = 0) {
+        state.sheetOpen = false;
+        if (reducedMotion) {
+          sheetSpring.set(0, 0);
+          renderSheet(0);
+        } else {
+          // convert px/s drag velocity (down positive in our drag) to progress velocity
+          // progress increases upward; dragY down decreases progress
+          const pVel = sheetHeight ? -velocity / sheetHeight : 0;
+          sheetSpring.to(0, { velocity: pVel, bounce: false });
+        }
+        document.querySelectorAll('.tab').forEach((t) => {
+          t.classList.toggle('on', t.dataset.tab === 'lab');
+        });
+      }
+
+      function beginSheetDrag(e, fromHandle) {
+        if (e.button != null && e.button !== 0) return;
+        measureSheet();
+        sheetDragging = true;
+        sheetSpring.stop();
+        // capture live presentation
+        const startY = e.clientY;
+        const startP = sheetProgress;
+        sheetVel.reset();
+        sheetVel.add(e.clientY, e.timeStamp);
+        const target = e.currentTarget;
+        try { target.setPointerCapture(e.pointerId); } catch (_) {}
+
+        const onMove = (ev) => {
+          if (!sheetDragging) return;
+          const dy = ev.clientY - startY; // down positive
+          let p = startP - dy / sheetHeight;
+          // rubber past fully open
+          if (p > 1) {
+            const overPx = (p - 1) * sheetHeight;
+            p = 1 + rubberband(overPx, sheetHeight) / sheetHeight;
+          }
+          // free drag below 0 will be clamped by commit decision
+          if (p < -0.05) p = -0.05;
+          sheetSpring.set(p, 0);
+          renderSheet(p);
+          sheetVel.add(ev.clientY, ev.timeStamp);
+        };
+
+        const onEnd = (ev) => {
+          if (!sheetDragging) return;
+          sheetDragging = false;
+          const v = sheetVel.velocity(); // px/s, down positive
+          const projectedY = (1 - sheetProgress) * sheetHeight + project(v);
+          // snap points: open y=0, closed y=height
+          const openDist = Math.abs(projectedY - 0);
+          const closedDist = Math.abs(projectedY - sheetHeight);
+          // also velocity sign bias: strong flick down closes
+          let shouldClose = closedDist < openDist;
+          if (v > 900) shouldClose = true;
+          if (v < -900) shouldClose = false;
+          if (shouldClose) {
+            closeSheet(v);
+            toast('弹层关闭');
+          } else {
+            state.sheetOpen = true;
+            const pVel = sheetHeight ? -v / sheetHeight : 0;
+            const useBounce = state.bounce && Math.abs(v) > 800;
+            sheetSpring.to(1, { velocity: pVel, bounce: useBounce });
+            toast('弹层回弹打开');
+          }
+          target.removeEventListener('pointermove', onMove);
+          target.removeEventListener('pointerup', onEnd);
+          target.removeEventListener('pointercancel', onEnd);
+        };
+
+        target.addEventListener('pointermove', onMove);
+        target.addEventListener('pointerup', onEnd);
+        target.addEventListener('pointercancel', onEnd);
+      }
+
+      sheetHandle.addEventListener('pointerdown', (e) => beginSheetDrag(e, true));
+      // also allow dragging from sheet head
+      document.querySelector('.sheet-head').addEventListener('pointerdown', (e) => {
+        if (e.target.closest('button')) return;
+        beginSheetDrag(e, true);
+      });
+
+      document.getElementById('openSheetRow').addEventListener('click', openSheet);
+      document.getElementById('openSheetRow').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(); }
+      });
+      document.getElementById('sheetClose').addEventListener('click', () => { closeSheet(0); toast('已关闭'); });
+      document.getElementById('sheetAction').addEventListener('click', () => {
+        buzz('success');
+        closeSheet(0);
+        toast('操作完成');
+      });
+      scrim.addEventListener('click', () => closeSheet(0));
+
+      // init closed
+      renderSheet(0);
+
+      // prevent scroll chaining on sheet body while dragging handle only — body can scroll
+      // Resize
+      window.addEventListener('resize', () => {
+        measureSheet();
+        renderSheet(sheetProgress);
+      });
+    })();
+  </script>
+</body>
+</html>
